@@ -1,0 +1,29 @@
+{
+  "name": "@ohdsi/visualizations",
+  "version": "1.0.0",
+  "description": "Visualizations is a collection of JavaScript modules to support D3 visualizations in web-based applications",
+  "main": "visualizations.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OHDSI/Visualizations.git"
+  },
+  "keywords": [
+    "Achilles",
+    "Atlas",
+    "charts"
+  ],
+  "contributors": [
+		{
+			"name": "Chris Knoll",
+			"email": "cknoll@ohdsi.org"
+		}
+	],
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/OHDSI/Visualizations/issues"
+  },
+  "homepage": "https://github.com/OHDSI/Visualizations#readme"
+}
