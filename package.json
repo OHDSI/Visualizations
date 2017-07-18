@@ -1,25 +1,24 @@
 {
-  "name": "atlascharts",
-  "version": "1.0.1",
-  "description": "A D3-based library for creating charts",
+  "name": "Visualizations",
+  "version": "1.0.0",
+  "description": "Visualizations is a collection of JavaScript modules to support D3 visualizations in web-based applications",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/odysseusinc/atlascharts.git"
+    "url": "git+https://github.com/OHDSI/Visualizations.git"
   },
   "keywords": [
+    "Achilles",
     "Atlas",
     "charts"
   ],
-  "author": "Odysseus Data Services, Inc.",
-  "license": "ISC",
   "bugs": {
-    "url": "https://github.com/odysseusinc/atlascharts/issues"
+    "url": "https://github.com/OHDSI/Visualizations/issues"
   },
-  "homepage": "https://github.com/odysseusinc/atlascharts#readme",
+  "homepage": "https://github.com/OHDSI/Visualizations#readme",
   "peerDependencies": {
     "d3": "^4.9.1",
     "lodash": "^4.17.4",
