@@ -18,12 +18,12 @@ class Line extends Chart {
     };
   }
 
-  static render(data, target, w, h, chartOptions) {
+  render(data, target, w, h, chartOptions) {
     // options
     const defaults = {
-      xFormat: this.getFormatters().formatSI(3),
-      yFormat: this.getFormatters().formatSI(3),
-      interpolate: this.getInterpolation().linear,
+      xFormat: Chart.getFormatters().formatSI(3),
+      yFormat: Chart.getFormatters().formatSI(3),
+      interpolate: Line.getInterpolation().linear,
       seriesName: 'SERIES_NAME',
       xValue: 'xValue',
       yValue: 'yValue',
@@ -37,7 +37,7 @@ class Line extends Chart {
     // container
     const svg = this.createSvg(target, w, h);
 
-    const tooltipBuilder = this.lineDefaultTooltip(
+    const tooltipBuilder = Chart.lineDefaultTooltip(
       options.xLabel || 'x',
       options.xFormat,
       d => d[options.xValue],

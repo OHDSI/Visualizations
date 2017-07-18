@@ -24,7 +24,7 @@ class Histogram extends Chart {
     return result;
   }
   
-  static drawBoxplot(g, data, width, height) {
+  drawBoxplot(g, data, width, height) {
     const boxplot = g;
     const x = this.xScale;
     const whiskerHeight = height / 2;
@@ -75,7 +75,7 @@ class Histogram extends Chart {
     }
   }
 
-  static render(chartData, target, w, h, chartOptions) {
+  render(chartData, target, w, h, chartOptions) {
     // options
     const defaults = {
       ticks: 10,

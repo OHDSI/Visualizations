@@ -15,7 +15,7 @@ class Chart {
     };
   }
 
-  static getOptions(chartSpecificDefaults, customOptions) {
+  getOptions(chartSpecificDefaults, customOptions) {
     return {
       margins: {
         top: 10,
@@ -31,7 +31,7 @@ class Chart {
     };
   }
 
-  static createSvg(target, width, height) {
+  createSvg(target, width, height) {
     const container = d3selection.select(target);
     container.select('svg').remove();
     const chart = container.append('svg')

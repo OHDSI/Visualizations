@@ -5,13 +5,13 @@ const numeral = require('numeral');
 import Chart from './Chart';
 
 class BoxPlot extends Chart {
-  static render(data, target, w, h, chartOptions) {
+  render(data, target, w, h, chartOptions) {
     // options
     const options = this.getOptions(chartOptions);
     // container
     const svg = this.createSvg(target, w, h);
 
-    const valueFormatter = this.getFormatters().formatSI(3);
+    const valueFormatter = Chart.getFormatters().formatSI(3);
 
     const tip = d3tip()
       .attr('class', 'd3-tip')
@@ -208,7 +208,7 @@ class BoxPlot extends Chart {
       .call(xAxis);
 
     chart.selectAll('.tick text')
-      .call(this.wrap, x.bandwidth() || x.range());
+      .call(Chart.wrap, x.bandwidth() || x.range());
 
     chart.append('g')
       .attr('class', 'y axis')

@@ -13,7 +13,7 @@ class Donut extends Chart {
     };
   }
 
-  static render(data, target, w, h, chartOptions) {
+  render(data, target, w, h, chartOptions) {
     // options
     const options = this.getOptions(chartOptions);
     // container
@@ -53,10 +53,10 @@ class Donut extends Chart {
       total += +d;
     });
 
-    const tooltipBuilder = this.donutDefaultTooltip(
+    const tooltipBuilder = Chart.donutDefaultTooltip(
       (d) => data.legend[d.index],
       (d) => numeral(d.value).format('0,0'), 
-      (d) => this.getFormatters().formatpercent(total != 0 ? d.value / total : 0.0)
+      (d) => Donut.getFormatters().formatpercent(total != 0 ? d.value / total : 0.0)
     );    
 
     const tip = d3tip()

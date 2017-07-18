@@ -5,7 +5,7 @@ import Line from './Line';
 import Chart from './Chart';
 
 class Trellisline extends Chart {
-  static render(dataByTrellis, target, w, h, chartOptions) {
+  render(dataByTrellis, target, w, h, chartOptions) {
     // options
     const defaults = {
       trellisSet: d3.keys(dataByTrellis),

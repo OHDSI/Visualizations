@@ -12,7 +12,7 @@ class BarChart extends Chart {
     };
   }
 
-  static render(data, target, w, h, chartOptions) {
+  render(data, target, w, h, chartOptions) {
     // options
     const defaults = {
       label: 'label',
@@ -87,11 +87,11 @@ class BarChart extends Chart {
       .attr('y', d => y(d[value]))
       .attr('height', d => height - y(d[value]))
       .attr('title', (d) => {
-        let temp_title = `${d[label]}: ${this.getFormatters().commaseparated(d[value], ',')}`;
+        let temp_title = `${d[label]}: ${Bar.getFormatters().commaseparated(d[value], ',')}`;
         if (total > 0) {
-          temp_title += ` (${this.getFormatters().formatpercent(d[value] / total)})`;
+          temp_title += ` (${Bar.getFormatters().formatpercent(d[value] / total)})`;
         } else {
-          temp_title += ` (${this.getFormatters().formatpercent(0)})`;
+          temp_title += ` (${Bar.getFormatters().formatpercent(0)})`;
         }
         return temp_title;
       })
@@ -107,7 +107,7 @@ class BarChart extends Chart {
         .enter()
         .append('text')
         .attr('class', 'barlabel')
-        .text(d => this.getFormatters().formatpercent(d[value] / total))
+        .text(d => Bar.getFormatters().formatpercent(d[value] / total))
         .attr('x', d => x(d[label]) + x.rangeBand() / 2)
         .attr('y', d => y(d[value]) - 3)
         .attr('text-anchor', 'middle');

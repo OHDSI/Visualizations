@@ -5,7 +5,7 @@ const d3 = require('d3');
 import Chart from './Chart';
 
 class AreaChart extends Chart {
-  static render(data, target, w, h, chartOptions) {
+  render(data, target, w, h, chartOptions) {
     const options = this.getOptions(chartOptions);
     const chart = this.createSvg(target, width, height, options);
 
@@ -31,7 +31,6 @@ class AreaChart extends Chart {
       .x(d => x(d.x))
       .y0(height)
       .y1(d => y(d.y));
-
 
     const vis = chart.append('g')
       .attr('transform', `translate(${options.margins.left}, ${options.margins.top})`);

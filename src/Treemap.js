@@ -11,7 +11,7 @@ class Treemap extends Chart {
     };
   }
 
-  static render(data, target, w, h, chartOptions) {
+  render(data, target, w, h, chartOptions) {
     // options
     const options = this.getOptions(chartOptions);
     // container
