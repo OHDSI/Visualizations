@@ -39,3 +39,12 @@ The following plots are supported by the visualization library:
 - trellisline
 - treemap
 
+Changelog
+---------
+
+## Part 1
+
+1. Added the existing charting library as a single file to the repository.
+2. Created a few examples to demonstrate the libary use.
+
+
