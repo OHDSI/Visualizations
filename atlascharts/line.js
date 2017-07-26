@@ -71,9 +71,8 @@ define(["jquery", "d3", "d3_tip", "./util"], function($, d3, d3_tip, util) {
 
 			var chart = d3.select(offscreen[0])
 				.append("svg:svg")
-				.attr("width", w)
-				.attr("height", h)
-				.attr("viewBox", "0 0 " + w + " " + h);
+				.attr("viewBox", `0 0 ${w} ${h}`)
+				.attr('preserveAspectRatio', 'xMinYMin meet');
 
 			if (data.length > 0) {
 
@@ -340,20 +339,6 @@ define(["jquery", "d3", "d3_tip", "./util"], function($, d3, d3_tip, util) {
 			$(target).append(offscreen);
 			$(offscreen).removeClass('offscreen');
 
-			var resizeHandler = $(window).on("resize", {
-					container: $(offscreen),
-					chart: $(offscreen).children('svg'),
-					aspect: w / h
-				},
-				function (event) {
-					var targetWidth = event.data.container.width();
-					event.data.chart.attr("width", targetWidth);
-					event.data.chart.attr("height", Math.round(targetWidth / event.data.aspect));
-				});
-
-			setTimeout(function () {
-				$(window).trigger('resize');
-			}, 0);
 		};
 	};
 	

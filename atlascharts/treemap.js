@@ -14,11 +14,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-Authors: Christopher Knoll
+Authors: Frank Defalco, Christopher Knoll, Pavel Grafkin
 
 */
 
-define(["jquery", "d3", "d3_tip"], function($, d3, d3_tip) {
+define(["d3", "d3_tip"], function(d3, d3_tip) {
 	"use strict";
 
 	function treemap() {
@@ -31,12 +31,11 @@ define(["jquery", "d3", "d3_tip"], function($, d3, d3_tip) {
 			svg,
 			x,
 			y,
-			current_depth = 0,
-			container;
+			current_depth = 0;
 
 		this.render = function (data, target, width, height, options) {
-			container = $(target);
-			container.find('.treemap_zoomtarget').text('');
+			
+			d3.select(target).select('.treemap_zoomtarget').text('');
 
 			root = data;
 			x = d3.scale.linear().range([0, width]);
@@ -54,21 +53,23 @@ define(["jquery", "d3", "d3_tip"], function($, d3, d3_tip) {
 
 			svg = d3.select(target)
 				.append("svg:svg")
-				.attr("width", width)
-				.attr("height", height)
-				.attr("viewBox", "0 0 " + width + " " + height)
+				.attr("viewBox", `0 0 ${width} ${height}`)
+				.attr('preserveAspectRatio', 'xMinYMin meet')
 				.append("svg:g");
 
 			var tip = d3_tip()
 				.attr('class', 'd3-tip')
-				.offset(function () { 
-					return [(this.getBBox().height / 2) - 5, 0]; 
+				.direction(function(d) {
+					const scaledWidth = x.domain()[1] === 1 ? width : x.domain()[1];
+					if (d.dx >= scaledWidth - scaledWidth / 10) {
+						return 'w';
+					} else if (d.x <= scaledWidth / 10) {
+						return 'e';
+					}
+					return 'n';
 				})
-				.direction("n")
-				.html(function (d) {
-					return options.getcontent(d);
-				});
-			svg.call(tip);
+				.offset([3, 0])
+				.html(d => `${options.gettitle(d)}<br/><br/>${options.getcontent(d)}`);
 			
 			nodes = treemap.nodes(data)
 				.filter(function (d) {
@@ -148,28 +149,18 @@ define(["jquery", "d3", "d3_tip"], function($, d3, d3_tip) {
 				});
 
 
-			$(window).on("resize", {
-					container: $(target),
-					chart: $(target + " svg"),
-					aspect: width / height
-				},
-				function (event) {
-					var targetWidth = event.data.container.width();
-					event.data.chart.attr("width", targetWidth);
-					event.data.chart.attr("height", Math.round(targetWidth / event.data.aspect));
-				}).trigger("resize");
-
 			function zoom(d) {
 				var kx = width / d.dx,
 					ky = height / d.dy;
 				x.domain([d.x, d.x + d.dx]);
 				y.domain([d.y, d.y + d.dy]);
 
+				var zoom_target = d3.select(target).select('.treemap_zoomtarget');
 				if (d.name === 'root') {
-					container.find('.treemap_zoomtarget').text('');
+					zoom_target.text('');
 				} else {
-					var current_zoom_caption = container.find('.treemap_zoomtarget').text();
-					container.find('.treemap_zoomtarget').text(current_zoom_caption + ' > ' + d.name);
+					var current_zoom_caption = zoom_target.text(); 
+					d3.select(target).select('.treemap_zoomtarget').text(current_zoom_caption + ' > ' + d.name);
 				}
 
 				var t = svg.selectAll("g.cell,.grouper").transition()
@@ -200,7 +191,7 @@ define(["jquery", "d3", "d3_tip"], function($, d3, d3_tip) {
 				kx = width / target.dx;
 				ky = height / target.dy;
 
-				$('.grouper').remove();
+				svg.selectAll('.grouper').remove();
 
 				var top_nodes = treemap.nodes(target)
 					.filter(function (d) {
@@ -229,9 +220,26 @@ define(["jquery", "d3", "d3_tip"], function($, d3, d3_tip) {
 						return d.id;
 					});
 			}
-
+			
+			if (options.useTip) {
+				svg.call(tip);
+				cell
+					.on('mouseover', d => tip.show(d, event.target))
+					.on('mouseout', d => tip.hide(d, event.target));
+			} else {
+				cell
+					.attr('data-container', 'body')
+					.attr('data-toggle', 'popover')
+					.attr('data-trigger', 'hover')
+					.attr('data-placement', 'top')
+					.attr('data-html', true)
+					.attr('data-title', d => options.gettitle(d.data))
+					.attr('data-content', d => options.getcontent(d.data));
+			}
+ 
 			applyGroupers(root);
-			$('.grouper').show();
+			svg.selectAll('.grouper')
+				.attr('display', 'block');
 		};
 	};
 	

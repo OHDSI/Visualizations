@@ -74,9 +74,8 @@ define(["jquery", "d3"], function($, d3) {
 			var chart = d3.select(target)
 				.append("svg:svg")
 				.data(data)
-				.attr("width", w)
-				.attr("height", h)
-				.attr("viewBox", "0 0 " + w + " " + h);
+				.attr("viewBox", `0 0 ${w} ${h}`)
+				.attr('preserveAspectRatio', 'xMinYMin meet');
 
 			var vis = chart.append("g")
 				.attr("transform", "translate(" + options.margin.left + "," + options.margin.top + ")");
@@ -95,16 +94,6 @@ define(["jquery", "d3"], function($, d3) {
 				.attr("class", "y axis")
 				.call(yAxis);
 
-			$(window).on("resize", {
-					container: $(target),
-					chart: $(target + " svg"),
-					aspect: w / h
-				},
-				function (event) {
-					var targetWidth = event.data.container.width();
-					event.data.chart.attr("width", targetWidth);
-					event.data.chart.attr("height", Math.round(targetWidth / event.data.aspect));
-				}).trigger("resize");
 		};
 	};
 	

@@ -18,13 +18,13 @@ Authors: Christopher Knoll
 
 */
 
-define(["jquery", "d3"], function($, d3) {
+define(["d3"], function(d3) {
 	"use strict";
 
 	function trellisline() {
 		var self = this;
 
-		self.render = function (dataByTrellis, target, w, h, options) {
+		self.render = function (dataByTrellis, target, w, h, opts) {
 			var defaults = {
 				margin: {
 					top: 10,
@@ -40,7 +40,7 @@ define(["jquery", "d3"], function($, d3) {
 				colors: d3.scale.category10()
 			};
 
-			options = $.extend({}, defaults, options);
+			var options = Object.assign(defaults, opts);
 
 			var bisect = d3.bisector(function (d) {
 				return d.date;
@@ -79,9 +79,8 @@ define(["jquery", "d3"], function($, d3) {
 
 			var chart = d3.select(target)
 				.append("svg:svg")
-				.attr("width", w)
-				.attr("height", h)
-				.attr("viewBox", "0 0 " + w + " " + h)
+				.attr("viewBox", `0 0 ${w} ${h}`)
+				.attr('preserveAspectRatio', 'xMinYMin meet')
 				.append("g")
 				.attr("transform", function (d) {
 					return "translate(" + margin.left + "," + margin.top + ")";
@@ -365,18 +364,6 @@ define(["jquery", "d3"], function($, d3) {
 				.call(yAxis);
 
 			chart.call(renderLegend);
-
-			$(window).on("resize", {
-					container: $(target),
-					chart: $(target + " svg"),
-					aspect: w / h
-				},
-				function (event) {
-					var targetWidth = event.data.container.width();
-					var targetHeight = Math.round(targetWidth / event.data.aspect);
-					event.data.chart.attr("width", targetWidth);
-					event.data.chart.attr("height", targetHeight);
-				}).trigger("resize");
 
 			function valueLabel(text, date) {
 				var offsetScale = d3.scale.linear().domain(seriesScale.range());

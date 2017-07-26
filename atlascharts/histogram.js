@@ -102,9 +102,8 @@ define(["jquery", "d3", "d3_tip", "./util"], function($, d3, d3_tip, util) {
 			var isNew = false; // this is a flag to determine if chart has already been ploted on this target.
 			if (!$(target + " svg")[0]) {
 				chart = d3.select(target).append("svg")
-					.attr("width", w)
-					.attr("height", h)
-					.attr("viewBox", "0 0 " + w + " " + h);
+				.attr("viewBox", `0 0 ${w} ${h}`)
+				.attr('preserveAspectRatio', 'xMinYMin meet');
 				isNew = true;
 			} else {
 				chart = d3.select(target + " svg");
@@ -266,17 +265,6 @@ define(["jquery", "d3", "d3_tip", "./util"], function($, d3, d3_tip, util) {
 					.attr("class", "y axis")
 					.attr("transform", "translate(0," + 0 + ")")
 					.call(yAxis);
-
-				$(window).on("resize", {
-						container: $(target),
-						chart: $(target + " svg"),
-						aspect: w / h
-					},
-					function (event) {
-						var targetWidth = event.data.container.width();
-						event.data.chart.attr("width", targetWidth);
-						event.data.chart.attr("height", Math.round(targetWidth / event.data.aspect));
-					}).trigger("resize");
 			}
 		};
 	};
