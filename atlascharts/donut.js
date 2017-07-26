@@ -66,9 +66,8 @@ define(["jquery", "d3", "d3_tip"], function($, d3, d3_tip) {
 			var chart = d3.select(target)
 				.append("svg:svg")
 				.data([data])
-				.attr("width", w)
-				.attr("height", h)
-				.attr("viewBox", "0 0 " + w + " " + h);
+				.attr("viewBox", `0 0 ${w} ${h}`)
+				.attr('preserveAspectRatio', 'xMinYMin meet');
 
 			var tip = d3_tip()
 				.attr('class', 'd3-tip')
@@ -151,16 +150,6 @@ define(["jquery", "d3", "d3_tip"], function($, d3, d3_tip) {
 					.text("No Data");
 			}
 
-			$(window).on("resize", {
-					container: $(target),
-					chart: $(target + " svg"),
-					aspect: w / h
-				},
-				function (event) {
-					var targetWidth = event.data.container.width();
-					event.data.chart.attr("width", targetWidth);
-					event.data.chart.attr("height", Math.round(targetWidth / event.data.aspect));
-				}).trigger("resize");
 		};
 	};
 
