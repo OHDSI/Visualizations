@@ -2,7 +2,7 @@ define(function(require) {
 	"use strict";
 	
 	var module = {
-		version = "0.0.1";
+		version: "0.0.1"
 	}
 	
 	var areachart = require("./areachart");
@@ -12,6 +12,7 @@ define(function(require) {
 	var histogram = require("./histogram");
 	var line = require("./line");
 	var trellisline = require("./trellisline");
+	var treemap = require("./treemap");
 	var util = require("./util");
 	
 	module.areachart = areachart;
