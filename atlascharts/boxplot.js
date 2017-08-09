@@ -197,7 +197,7 @@ define(["jquery", "d3", "d3_tip", "./util"], function($, d3, d3_tip, util) {
 				.call(xAxis);
 
 			chart.selectAll(".tick text")
-				.call(module.util.wrap, x.rangeBand() || x.range());
+				.call(util.wrap, x.rangeBand() || x.range());
 
 			chart.append("g")
 				.attr("class", "y axis")

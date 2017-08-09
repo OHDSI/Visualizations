@@ -23,7 +23,7 @@ define(["jquery", "d3", "d3_tip", "./util"], function($, d3, d3_tip, util) {
 
 	function histogram() {
 		var self = this;
-		self.xScale; // shared xScale for histogram and boxplot
+		self.xScale = null; // shared xScale for histogram and boxplot
 
 		self.drawBoxplot = function (g, data, width, height) {
 			var boxplot = g,

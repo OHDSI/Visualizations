@@ -1,14 +1,14 @@
 <html>
 
 <head>
-	<title>Visualizations: Lineplot</title>
+	<title>Visualizations: Lineplot w/ optimized build</title>
 	<link href="example.css" rel="stylesheet">
 	<link href="chart.css" rel="stylesheet">
 </head>
 
 <body>
 	<h1>Line Plot Example</h1>
-	<div>This plot shows a simple lineplot with multiple series</div>
+	<div>This plot shows a simple lineplot with multiple series. It uses an optimized build of the  charting libary.</div>
 	<div style="width:30%" id="plot"></div>
 	<hr/>
 	<div>Data:</div>
@@ -42,11 +42,12 @@
 	</textarea>
 	<button id="reload">Reload</button>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
-	<script src="../build/config.js"></script>
+	<script src="config-optimized.js"></script>
 	<script>
-		requirejs(['jquery', 'd3', 'atlascharts/line'], function($, d3, line) {
+		requirejs(['jquery', 'd3', 'atlascharts'], function($, d3, charts) {
 			var cartData;
-			var lineplot = new line();
+			// works differently with bundles: the entire module was required(), so line is contained by the charts module.
+			var lineplot = new charts.line();
 
 			function refreshPlot() {
 				d3.selectAll("#plot svg").remove();

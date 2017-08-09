@@ -72,7 +72,7 @@ define(["jquery", "d3", "d3_tip", "./util"], function($, d3, d3_tip, util) {
 
 			var svg = d3.select(target).append("svg")
 				.attr("viewBox", `0 0 ${w} ${h}`)
-				.attr('preserveAspectRatio', 'xMinYMin meet');
+				.attr('preserveAspectRatio', 'xMinYMin meet')
 				.append("g")
 				.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 				.attr("class", "barchart");
