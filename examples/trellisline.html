@@ -1,0 +1,96 @@
+<html>
+
+<head>
+	<title>Visualizations: trellis line</title>
+	<link href="example.css" rel="stylesheet">
+	<link href="chart.css" rel="stylesheet">
+</head>
+
+<body>
+	<h1>Trellis Line Example</h1>
+	<div>This plot shows a simple trellis lineplot.</div>
+	<div style="width:50%" id="plot"></div>
+	<hr/>
+	<div>Data:</div>
+	<textarea id="chartData" style="width:600px; height:400px">
+[
+	{"TRELLIS_NAME":"0-18","SERIES_NAME":"FEMALE","X_CALENDAR_YEAR":2000,"Y_PREVALENCE_1000PP":65.3},
+	{"TRELLIS_NAME":"0-18","SERIES_NAME":"FEMALE","X_CALENDAR_YEAR":2001,"Y_PREVALENCE_1000PP":67.2},
+	{"TRELLIS_NAME":"0-18","SERIES_NAME":"FEMALE","X_CALENDAR_YEAR":2002,"Y_PREVALENCE_1000PP":69.4},
+	{"TRELLIS_NAME":"0-18","SERIES_NAME":"FEMALE","X_CALENDAR_YEAR":2003,"Y_PREVALENCE_1000PP":71.6},
+	{"TRELLIS_NAME":"0-18","SERIES_NAME":"MALE","X_CALENDAR_YEAR":2000,"Y_PREVALENCE_1000PP":55.3},
+	{"TRELLIS_NAME":"0-18","SERIES_NAME":"MALE","X_CALENDAR_YEAR":2001,"Y_PREVALENCE_1000PP":57.2},
+	{"TRELLIS_NAME":"0-18","SERIES_NAME":"MALE","X_CALENDAR_YEAR":2002,"Y_PREVALENCE_1000PP":59.4},
+	{"TRELLIS_NAME":"0-18","SERIES_NAME":"MALE","X_CALENDAR_YEAR":2003,"Y_PREVALENCE_1000PP":61.6},
+	{"TRELLIS_NAME":"19-64","SERIES_NAME":"FEMALE","X_CALENDAR_YEAR":2000,"Y_PREVALENCE_1000PP":65.3},
+	{"TRELLIS_NAME":"19-64","SERIES_NAME":"FEMALE","X_CALENDAR_YEAR":2001,"Y_PREVALENCE_1000PP":67.2},
+	{"TRELLIS_NAME":"19-64","SERIES_NAME":"FEMALE","X_CALENDAR_YEAR":2002,"Y_PREVALENCE_1000PP":69.4},
+	{"TRELLIS_NAME":"19-64","SERIES_NAME":"FEMALE","X_CALENDAR_YEAR":2003,"Y_PREVALENCE_1000PP":71.6},
+	{"TRELLIS_NAME":"19-64","SERIES_NAME":"MALE","X_CALENDAR_YEAR":2000,"Y_PREVALENCE_1000PP":55.3},
+	{"TRELLIS_NAME":"19-64","SERIES_NAME":"MALE","X_CALENDAR_YEAR":2001,"Y_PREVALENCE_1000PP":57.2},
+	{"TRELLIS_NAME":"19-64","SERIES_NAME":"MALE","X_CALENDAR_YEAR":2002,"Y_PREVALENCE_1000PP":59.4},
+	{"TRELLIS_NAME":"19-64","SERIES_NAME":"MALE","X_CALENDAR_YEAR":2003,"Y_PREVALENCE_1000PP":61.6},
+	{"TRELLIS_NAME":"65+","SERIES_NAME":"FEMALE","X_CALENDAR_YEAR":2000,"Y_PREVALENCE_1000PP":65.3},
+	{"TRELLIS_NAME":"65+","SERIES_NAME":"FEMALE","X_CALENDAR_YEAR":2001,"Y_PREVALENCE_1000PP":67.2},
+	{"TRELLIS_NAME":"65+","SERIES_NAME":"FEMALE","X_CALENDAR_YEAR":2002,"Y_PREVALENCE_1000PP":69.4},
+	{"TRELLIS_NAME":"65+","SERIES_NAME":"FEMALE","X_CALENDAR_YEAR":2003,"Y_PREVALENCE_1000PP":71.6},
+	{"TRELLIS_NAME":"65+","SERIES_NAME":"MALE","X_CALENDAR_YEAR":2000,"Y_PREVALENCE_1000PP":55.3},
+	{"TRELLIS_NAME":"65+","SERIES_NAME":"MALE","X_CALENDAR_YEAR":2001,"Y_PREVALENCE_1000PP":57.2},
+	{"TRELLIS_NAME":"65+","SERIES_NAME":"MALE","X_CALENDAR_YEAR":2002,"Y_PREVALENCE_1000PP":59.4},
+	{"TRELLIS_NAME":"65+","SERIES_NAME":"MALE","X_CALENDAR_YEAR":2003,"Y_PREVALENCE_1000PP":61.6}
+]
+	</textarea>
+	<button id="reload">Reload</button>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
+	<script src="../build/config.js"></script>
+	<script>
+		requirejs(['jquery', 'd3', 'atlascharts/trellisline'], function($, d3, trellisline) {
+			var cartData;
+			var plot = new trellisline();
+
+			function refreshPlot() {
+				d3.selectAll("#plot svg").remove();
+				chartData = JSON.parse($("#chartData").val());
+				// need to convert the flat JSON form into the nested structure the trellis expects
+				chartData.forEach(function(d) { d.date = new Date(d.X_CALENDAR_YEAR, 0, 1)}); // add a 'date' field coverting the year to a real date.
+				
+				// create the nest builder
+				var nestByDecile = d3.nest()
+					.key(function (d) {
+						return d.TRELLIS_NAME;
+					})
+					.key(function (d) {
+						return d.SERIES_NAME;
+					})
+					.sortValues(function (a, b) {
+						return a.X_CALENDAR_YEAR - b.X_CALENDAR_YEAR;
+					});
+				
+				var dataByDecile = nestByDecile.entries(chartData);
+				
+				// normally we would fill in gap years in the series, but this example has no gaps
+				
+				plot.render(dataByDecile, "#plot", 500,250, {
+					trellisSet: dataByDecile.map(function(t) { return t.key; }),
+					trellisLabel: "Age Decile",
+					seriesLabel: "Year of Observation",
+					yLabel: "Prevalence Per 1000 People",
+					xFormat: d3.time.format("%Y"),
+					yFormat: d3.format("0.2f"),
+					tickPadding: 20,
+					colors: d3.scale.ordinal()
+						.domain(["MALE", "FEMALE"])
+						.range(["#1f77b4", "#ff7f0e"])						
+				});
+			}
+			
+			$("#reload").on("click", function() {
+				refreshPlot();	
+			});
+			
+			refreshPlot();
+			
+		});
+	</script>
+</body>
+</html>
