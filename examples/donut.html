@@ -14,32 +14,46 @@
 	<div>Data:</div>
 	<textarea id="chartData" style="width:600px; height:400px">
 [
-	{"id": 1, "label": "Type 1", "value":10},
-	{"id": 2, "label": "Type 2", "value":20},
-	{"id": 3, "label": "Type 3", "value":30},
-	{"id": 4, "label": "Type 4", "value":40}
+	10,
+	20,
+	30,
+	40
 ]
 	</textarea>
 	<button id="reload">Reload</button>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
 	<script src="../build/config.js"></script>
 	<script>
-		requirejs(['jquery', 'd3', 'atlascharts/donut'], function($, d3, donut) {
+		requirejs(['atlascharts/donut'], function(donut) {
 			var cartData;
 			var plot = new donut();
+			var target = document.querySelector('#plot');
 
 			function refreshPlot() {
-				d3.selectAll("#plot svg").remove();
-				chartData = JSON.parse($("#chartData").val());
-				plot.render(chartData, "#plot", 300,300, {
-					ticks: 4,
-					xLabel: "Type",
-					yLabel: "Count",
-					showLegend: true				
-				});
+				chartData = JSON.parse(document.querySelector("#chartData").value);
+				plot.render(
+					{
+						data: chartData,
+						legend: [
+							'Type 1',
+							'Type 2',
+							'Type 3',
+							'Type 4'
+						],
+					},
+					target,
+					300,
+					300,
+					{
+						ticks: 4,
+						xLabel: "Type",
+						yLabel: "Count",
+						showLegend: true				
+					}
+				);
 			}
 			
-			$("#reload").on("click", function() {
+			document.querySelector("#reload").addEventListener("click", function() {
 				refreshPlot();	
 			});
 			

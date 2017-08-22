@@ -24,14 +24,14 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
 	<script src="../build/config.js"></script>
 	<script>
-		requirejs(['jquery', 'd3', 'atlascharts/boxplot'], function($, d3, boxplot) {
+		requirejs(['atlascharts/boxplot'], function(boxplot) {
 			var cartData;
 			var plot = new boxplot();
+			var target = document.querySelector('#plot');
 
 			function refreshPlot() {
-				d3.selectAll("#plot svg").remove();
-				chartData = JSON.parse($("#chartData").val());
-				plot.render(chartData, "#plot", 300,300, {
+				chartData = JSON.parse(document.querySelector("#chartData").value);
+				plot.render(chartData, target, 300,300, {
 					ticks: 4,
 					xLabel: "Type",
 					yLabel: "Count",
@@ -39,7 +39,7 @@
 				});
 			}
 			
-			$("#reload").on("click", function() {
+			document.querySelector("#reload").addEventListener("click", function() {
 				refreshPlot();	
 			});
 			

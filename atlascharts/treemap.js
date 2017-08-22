@@ -14,235 +14,311 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-Authors: Frank Defalco, Christopher Knoll, Pavel Grafkin
+Authors: Frank Defalco, Christopher Knoll, Pavel Grafkin, Alexander Saltykov
 
 */
 
-define(["d3", "d3_tip"], function(d3, d3_tip) {
+define(["d3", "d3-tip", "chart"],
+	function(d3, d3tip, Chart) {
 	"use strict";
 
-	function treemap() {
-		var self = this;
+	class Treemap extends Chart {
+	  get formatters() {
+	    return {
+	      format_pct: d3.format('.2%'),
+	      format_fixed: d3.format('.2f'),
+	      format_comma: d3.format(','),
+	    };
+	  }
 
-		var root,
-			node,
-			nodes,
-			treemap,
-			svg,
-			x,
-			y,
-			current_depth = 0;
+	  render(data, target, w, h, chartOptions) {
+	    // options
+	    const options = this.getOptions(chartOptions);
+	    // container
+	    const svg = this.createSvg(target, w, h);
 
-		this.render = function (data, target, width, height, options) {
-			
-			d3.select(target).select('.treemap_zoomtarget').text('');
+	    const x = d3.scaleLinear().range([0, w]);
+	    const y = d3.scaleLinear().range([0, h]);
 
-			root = data;
-			x = d3.scale.linear().range([0, width]);
-			y = d3.scale.linear().range([0, height]);
+	    d3.select(target).select('.treemap_zoomtarget').text('');
+	    let currentDepth = 0;
 
+	    const tip = d3tip()
+	      .attr('class', 'd3-tip')
+	      .direction(function(d) {
+	        const scaledWidth = x.domain()[1] === 1 ? w : x.domain()[1];
+	        if (d.x1 >= scaledWidth - scaledWidth / 10) {
+	          return 'w';
+	        } else if (d.x0 <= scaledWidth / 10) {
+	          return 'e';
+	        }
+	        return 'n';
+	      })
+	      .offset([3, 0])
+	      .html(function (d) {
+	      	return `${options.gettitle(d.data)}<br/><br/>${options.getcontent(d.data)}`
+	      });
 
-			
-			treemap = d3.layout.treemap()
-				.round(false)
-				.size([width, height])
-				.sticky(true)
-				.value(function (d) {
-					return options.getsizevalue(d);
-				});
+	    const treemap = d3.treemap()
+	      .round(false)
+	      .size([w, h]);
 
-			svg = d3.select(target)
-				.append("svg:svg")
-				.attr("viewBox", `0 0 ${width} ${height}`)
-				.attr('preserveAspectRatio', 'xMinYMin meet')
-				.append("svg:g");
+	    const hierarchy = d3.hierarchy(data, function(d) {
+	    	return d.children;
+	    }).sum(options.getsizevalue);
+	    const tree = treemap(hierarchy);
 
-			var tip = d3_tip()
-				.attr('class', 'd3-tip')
-				.direction(function(d) {
-					const scaledWidth = x.domain()[1] === 1 ? width : x.domain()[1];
-					if (d.dx >= scaledWidth - scaledWidth / 10) {
-						return 'w';
-					} else if (d.x <= scaledWidth / 10) {
-						return 'e';
-					}
-					return 'n';
-				})
-				.offset([3, 0])
-				.html(d => `${options.gettitle(d)}<br/><br/>${options.getcontent(d)}`);
-			
-			nodes = treemap.nodes(data)
-				.filter(function (d) {
-					return options.getsizevalue(d);
-				});
+	    function zoom(d, isAnimated = true) {
+	      const kx = w / (d.x1 - d.x0) || w;
+	      const ky = h / (d.y1 - d.y0) || h;
+	      if (d.x1 && d.y1) {
+	        x.domain([d.x0, d.x0 + (d.x1 - d.x0)]);
+	        y.domain([d.y0, d.y0 + (d.y1 - d.y0)]);
+	      } else {
+	        x.domain([0, w]);
+	        y.domain([0, h]);
+	      }
 
-			var extent = d3.extent(nodes, function (d) {
-				return options.getcolorvalue(d);
-			});
-			var median = d3.median(nodes, function (d) {
-				return options.getcolorvalue(d);
-			});
+	      const zoomtarget = d3.select(target).select('.treemap_zoomtarget');
+	      if (zoomtarget.size()) {
+	        if (d.data.name === 'root') {
+	          zoomtarget.text('');
+	        } else {
+	          const currentZoomcaption = zoomtarget.text();
+	          zoomtarget.text(`${currentZoomcaption} > ${d.data.name}`);
+	        }
+	      }
 
-			var colorRange;
-			if (options.getcolorrange) {
-				colorRange = options.getcolorrange();
-			} else {
-				colorRange = ["#E4FF7A", "#FC7F00"];
-			}
+	      let t = svg.selectAll('g.cell, .grouper');
+	      if (isAnimated) {
+	        t = t.transition()
+	        .duration(750);
+	      }
+	      t.attr('transform', function(c) {
+	      	return `translate(${x(c.x0)}, ${y(c.y0)})`;
+	      })
+	        .on('end', function () {
+	          svg.selectAll('.grouper')
+	            .attr('display', 'block');
+	        });
 
-			var colorScale = [extent[0], median, extent[1]];
-			if (options.getcolorscale) {
-				colorScale = options.getcolorscale();
-			}
-			var color = d3.scale.linear()
-				.domain(colorScale)
-				.range(colorRange);
+	      // patched to prevent negative value assignment to width and height
+	      t.select('rect')
+	        .attr('width', function (c) {
+	        	return Math.max(0, (kx * (c.x1 - c.x0)) - 1)
+	        })
+	        .attr('height', function (c) {
+	        	return Math.max(0, (ky * (c.y1 - c.y0)) - 1)
+	        });
 
-			var cell = svg.selectAll("g")
-				.data(nodes)
-				.enter().append("svg:g")
-				.attr("class", "cell")
-				.attr("transform", function (d) {
-					return "translate(" + d.x + "," + d.y + ")";
-				});
+	      if (event) {
+	        event.stopPropagation();
+	      }
+	      if (options.onZoom) {
+	        options.onZoom(d);
+	      }
+	    }
 
-			cell.append("svg:rect")
-				.attr("width", function (d) {
-					return Math.max(0, d.dx - 1);
-				})
-				.attr("height", function (d) {
-					return Math.max(0, d.dy - 1);
-				})
-				.attr("id", function (d) {
-					return d.id;
-				})
-				.style("fill", function (d) {
-					return color(options.getcolorvalue(d));
-				})
-				.attr("data-title", function (d) {
-					return options.gettitle(d);
-				})
-				.on('mouseover', tip.show)
-  			.on('mouseout', tip.hide)			
-				.on('click', function (d) {
-					if (d3.event.altKey) {
-						zoom(root);
-						applyGroupers(root);
-					} else if (d3.event.ctrlKey) {
-						var target = d;
+	    function applyGroupers(groupingTarget) {
+	      const kx = w / (groupingTarget.x1 - groupingTarget.x0);
+	      const ky = h / (groupingTarget.y1 - groupingTarget.y0);
 
-						while (target.depth !== current_depth + 1) {
-							target = target.parent;
-						}
-						current_depth = target.depth;
-						if (target.children && target.children.length > 1) {
-							applyGroupers(target);
-							zoom(target);
-						} else {
-							current_depth = 0;
-							applyGroupers(root);
-							zoom(root);
-						}
-					} else {
-						options.onclick && options.onclick(d);
-					}
-				});
+	      const topNodes = tree.children
+	        .filter(function(d) {
+	        	return d.parent === groupingTarget;
+	        });
 
+	      svg.selectAll('.grouper')
+	        .remove();
+	      const groupers = svg.selectAll('.grouper')
+	        .data(topNodes)
+	        .enter()
+	        .append('g')
+	        .attr('class', 'grouper')
+	        .attr('transform', function (d) {
+	        	return `translate(${(d.x0 + 1)}, ${(d.y0 + 1)})`;
+	        })
+	        .attr('display', 'none');
 
-			function zoom(d) {
-				var kx = width / d.dx,
-					ky = height / d.dy;
-				x.domain([d.x, d.x + d.dx]);
-				y.domain([d.y, d.y + d.dy]);
+	      groupers.append('rect')
+	        .attr('width', function(d) {
+	        	return Math.max(0, (kx * (d.x1 - d.x0)) - 1);
+	        })
+	        .attr('height', function(d) {
+	        	return Math.max(0, (ky * (d.y1 - d.y0)) - 1);
+	        })
+	        .attr('title', function(d) {
+	        	return d.name;
+	        })
+	        .attr('id', function(d) {
+		        return d.id;
+	      	});
+	    }
 
-				var zoom_target = d3.select(target).select('.treemap_zoomtarget');
-				if (d.name === 'root') {
-					zoom_target.text('');
-				} else {
-					var current_zoom_caption = zoom_target.text(); 
-					d3.select(target).select('.treemap_zoomtarget').text(current_zoom_caption + ' > ' + d.name);
-				}
+	    const nodes = tree.leaves()
+	      .filter(function(d) {
+	      	return options.getsizevalue(d.data);
+	      });
 
-				var t = svg.selectAll("g.cell,.grouper").transition()
-					.duration(750)
-					.attr("transform", function (d) {
-						return "translate(" + x(d.x) + "," + y(d.y) + ")";
-					})
-					.each("end", function () {
-						$('.grouper').show();
-					});
+	    const extent = d3.extent(nodes, function(d) {
+	    	return options.getcolorvalue(d.data);
+	    });
+	    const median = d3.median(nodes, function(d) {
+	    	return options.getcolorvalue(d.data);
+	    });
 
-				// patched to prevent negative value assignment to width and height
-				t.select("rect")
-					.attr("width", function (d) {
-						return Math.max(0, kx * d.dx - 1);
-					})
-					.attr("height", function (d) {
-						return Math.max(0, ky * d.dy - 1);
-					});
+	    let colorRange;
+	    if (options.getcolorrange) {
+	      colorRange = options.getcolorrange();
+	    } else {
+	      colorRange = ['#E4FF7A', '#FC7F00'];
+	    }
 
-				node = d;
-				d3.event.stopPropagation();
-			}
+	    let colorScale = [extent[0], median, extent[1]];
+	    if (options.getcolorscale) {
+	      colorScale = options.getcolorscale();
+	    }
+	    const color = d3.scaleLinear()
+	      .domain(colorScale)
+	      .range(colorRange);
 
-			function applyGroupers(target) {
-				var kx, ky;
+	    const cell = svg.selectAll('g')
+	      .data(nodes)
+	      .enter().append('g')
+	      .attr('class', 'cell')
+	      .attr('transform', function(d) {
+	      	return `translate(${d.x0}, ${d.y0})`;
+	      });
 
-				kx = width / target.dx;
-				ky = height / target.dy;
+	    cell.append('rect')
+	      .attr('width', function(d) {
+	      	return Math.max(0, d.x1 - d.x0 - 1);
+	      })
+	      .attr('height', function(d) {
+	      	return Math.max(0, d.y1 - d.y0 - 1);
+	      })
+	      .attr('id', function(d) {
+	      	return d.id;
+	      })
+	      .style('fill', function(d) {
+	      	return color(options.getcolorvalue(d.data));
+	      })
+	      .on('click', function(d) {
+	        if (options.useTip) {
+	          tip.hide();
+	        }
+	        if (event.altKey) {
+	          zoom(hierarchy);
+	          applyGroupers(hierarchy);
+	        } else if (event.ctrlKey) {
+	          let currentTarget = d;
 
-				svg.selectAll('.grouper').remove();
+	          while (currentTarget.depth !== currentDepth + 1) {
+	            currentTarget = currentTarget.parent;
+	          }
+	          currentDepth = currentTarget.depth;
+	          if (currentTarget.children && currentTarget.children.length > 1) {
+	            applyGroupers(currentTarget);
+	            zoom(currentTarget);
+	          } else {
+	            currentDepth = 0;
+	            applyGroupers(hierarchy);
+	            zoom(hierarchy);
+	          }
+	        } else {
+	          options.onclick(d.data);
+	        }
+	      });
 
-				var top_nodes = treemap.nodes(target)
-					.filter(function (d) {
-						return d.parent === target;
-					});
+	    if (options.useTip) {
+	      svg.call(tip);
+	      cell
+	        .on('mouseover', function(d) {
+	        	return tip.show(d, event.target);
+	        })
+	        .on('mouseout', function(d) {
+	        	return tip.hide(d, event.target);
+	      });
+	    } else {
+	      cell
+	        .attr('data-container', 'body')
+	        .attr('data-toggle', 'popover')
+	        .attr('data-trigger', 'hover')
+	        .attr('data-placement', 'top')
+	        .attr('data-html', true)
+	        .attr('data-title', function(d) {
+	        	return options.gettitle(d.data);
+	        })
+	        .attr('data-content', function(d) {
+	        	return options.getcontent(d.data);
+	        });
+	    }
 
-				var groupers = svg.selectAll(".grouper")
-					.data(top_nodes)
-					.enter().append("svg:g")
-					.attr("class", "grouper")
-					.attr("transform", function (d) {
-						return "translate(" + (d.x + 1) + "," + (d.y + 1) + ")";
-					});
+	    if (options.initialZoomedConcept) {
+	      applyGroupers(options.initialZoomedConcept);
+	      zoom(options.initialZoomedConcept, false);
+	    } else {
+	      applyGroupers(hierarchy);
+	    }
+	    svg
+	      .selectAll('.grouper')
+	      .attr('display', 'block');
+	  }
 
-				groupers.append("svg:rect")
-					.attr("width", function (d) {
-						return Math.max(0, (kx * d.dx) - 1);
-					})
-					.attr("height", function (d) {
-						return Math.max(0, (ky * d.dy) - 1);
-					})
-					.attr("title", function (d) {
-						return d.name;
-					})
-					.attr("id", function (d) {
-						return d.id;
-					});
-			}
-			
-			if (options.useTip) {
-				svg.call(tip);
-				cell
-					.on('mouseover', d => tip.show(d, event.target))
-					.on('mouseout', d => tip.hide(d, event.target));
-			} else {
-				cell
-					.attr('data-container', 'body')
-					.attr('data-toggle', 'popover')
-					.attr('data-trigger', 'hover')
-					.attr('data-placement', 'top')
-					.attr('data-html', true)
-					.attr('data-title', d => options.gettitle(d.data))
-					.attr('data-content', d => options.getcontent(d.data));
-			}
- 
-			applyGroupers(root);
-			svg.selectAll('.grouper')
-				.attr('display', 'block');
-		};
-	};
-	
-	return treemap;
+	  static buildHierarchyFromJSON(data, threshold, leafNodeCreator) {
+	    let total = 0;
+
+	    const root = {
+	      name: 'root',
+	      children: [],
+	    };
+
+	    data.PERCENT_PERSONS.forEach(function(p) {
+	      total += p;
+	    });
+
+	    data.CONCEPT_PATH.forEach(function(path, i) {
+	      const parts = path.split('||');
+	      let currentNode = root;
+	      for (let j = 0; j < parts.length; j += 1) {
+	        const children = currentNode.children;
+	        const nodeName = parts[j];
+	        let childNode;
+	        if (j + 1 < parts.length) {
+	          // Not yet at the end of the path; move down the tree.
+	          let foundChild = false;
+	          children.forEach(function(child) {
+	            if (child.name === nodeName) {
+	              childNode = child;
+	              foundChild = true;
+	            }
+	          });
+	          // If we don't already have a child node for this branch, create it.
+	          if (!foundChild) {
+	            childNode = {
+	              name: nodeName,
+	              children: [],
+	            };
+	            children.push(childNode);
+	          }
+	          currentNode = childNode;
+	        } else {
+	          // Reached the end of the path; create a leaf node.
+	          childNode = leafNodeCreator(nodeName, i, data);
+
+	          // we only include nodes with sufficient size in the treemap display
+	          // sufficient size is configurable in the calculation of threshold
+	          // which is a function of the number of pixels in the treemap display
+	          if ((data.PERCENT_PERSONS[i] / total) > threshold) {
+	            children.push(childNode);
+	          }
+	        }
+	      }
+	    });
+	    return root;
+	  }
+	}
+		
+	return Treemap;
 	
 });

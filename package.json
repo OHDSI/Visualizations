@@ -30,6 +30,7 @@
   },
   "homepage": "https://github.com/OHDSI/Visualizations#readme",
   "dependencies": {
+    "d3-tip": "^0.7.1",
     "google-closure-compiler-js": "^20170626.0.0",
     "requirejs": "^2.3.4"
   }
