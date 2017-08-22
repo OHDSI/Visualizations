@@ -18,8 +18,8 @@ Authors: Christopher Knoll
 
 */
 
-define(["d3", "d3-tip", "chart"],
-	function(d3, d3tip, Chart) {
+define(["d3", "d3-tip", "d3-scale", "chart"],
+	function(d3, d3tip, d3scale, Chart) {
 	"use strict";
 
 	class BarChart extends Chart {
@@ -53,11 +53,11 @@ define(["d3", "d3-tip", "chart"],
 
 	    // axes
 	    const x = d3.scaleBand()
-	      .range([0, width])
+	      .range([0, w])
 	      .round(1.0 / data.length);
 
 	    const y = d3scale.scaleLinear()
-	      .range([height, 0]);
+	      .range([h, 0]);
 
 	    const xAxis = d3.axisBottom()
 	      .scale(x)
@@ -79,7 +79,7 @@ define(["d3", "d3-tip", "chart"],
 
 	    svg.append('g')
 	      .attr('class', 'x axis')
-	      .attr('transform', `translate(0, ${height + 1})`)
+	      .attr('transform', `translate(0, ${h + 1})`)
 	      .call(xAxis)
 	      .selectAll('.tick text')
 	      .style('text-anchor', options.textAnchor)
@@ -103,7 +103,7 @@ define(["d3", "d3-tip", "chart"],
 	      .attr('x', d => x(d[label]))
 	      .attr('width', x.bandwidth())
 	      .attr('y', d => y(d[value]))
-	      .attr('height', d => height - y(d[value]))
+	      .attr('height', d => h - y(d[value]))
 	      .attr('title', (d) => {
 	        let temp_title = `${d[label]}: ${this.formatters.commaseparated(d[value], ',')}`;
 	        if (total > 0) {
@@ -126,7 +126,7 @@ define(["d3", "d3-tip", "chart"],
 	        .append('text')
 	        .attr('class', 'barlabel')
 	        .text(d => this.formatters.formatpercent(d[value] / total))
-	        .attr('x', d => x(d[label]) + x.rangeBand() / 2)
+	        .attr('x', d => x(d[label]) + x.bandwidth() / 2)
 	        .attr('y', d => y(d[value]) - 3)
 	        .attr('text-anchor', 'middle');
 	    }

@@ -44,13 +44,13 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
 	<script src="../build/config.js"></script>
 	<script>
-		requirejs(['jquery', 'd3', 'atlascharts/trellisline'], function($, d3, trellisline) {
+		requirejs(['d3', 'd3-scale', 'atlascharts/trellisline'], function(d3, d3scale, trellisline) {
 			var cartData;
 			var plot = new trellisline();
+			var target = document.querySelector('#plot');
 
 			function refreshPlot() {
-				d3.selectAll("#plot svg").remove();
-				chartData = JSON.parse($("#chartData").val());
+				chartData = JSON.parse(document.querySelector("#chartData").value);
 				// need to convert the flat JSON form into the nested structure the trellis expects
 				chartData.forEach(function(d) { d.date = new Date(d.X_CALENDAR_YEAR, 0, 1)}); // add a 'date' field coverting the year to a real date.
 				
@@ -70,21 +70,21 @@
 				
 				// normally we would fill in gap years in the series, but this example has no gaps
 				
-				plot.render(dataByDecile, "#plot", 500,250, {
+				plot.render(dataByDecile, target, 500, 250, {
 					trellisSet: dataByDecile.map(function(t) { return t.key; }),
 					trellisLabel: "Age Decile",
 					seriesLabel: "Year of Observation",
 					yLabel: "Prevalence Per 1000 People",
-					xFormat: d3.time.format("%Y"),
+					xFormat: d3.timeFormat("%Y"),
 					yFormat: d3.format("0.2f"),
 					tickPadding: 20,
-					colors: d3.scale.ordinal()
+					colors: d3scale.scaleOrdinal()
 						.domain(["MALE", "FEMALE"])
 						.range(["#1f77b4", "#ff7f0e"])						
 				});
 			}
 			
-			$("#reload").on("click", function() {
+			document.querySelector("#reload").addEventListener("click", function() {
 				refreshPlot();	
 			});
 			

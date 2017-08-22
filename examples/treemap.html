@@ -57,17 +57,14 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
 	<script src="../build/config.js"></script>
 	<script>
-		requirejs(['jquery', 'd3', 'atlascharts/treemap'], function($, d3, treemap) {
+		requirejs(['atlascharts/treemap'], function(treemap) {
 			var cartData;
-			var plot = new treemap(),
-				format_pct = d3.format('.2%'),
-				format_fixed = d3.format('.2f'),
-				format_comma = d3.format(',');
+			var plot = new treemap();
+			var target = document.querySelector('#plot');
 			
 			function refreshPlot() {
-				d3.selectAll("#plot svg").remove();
-				chartData = JSON.parse($("#chartData").val());
-				plot.render(chartData, "#plot", 400,275, {
+				chartData = JSON.parse(document.querySelector("#chartData").value);
+				plot.render(chartData, target, 400, 275, {
 					getsizevalue: function (node) {
 						return node.num_persons;
 					},
@@ -79,9 +76,10 @@
 							steps = node.path.split('||'),
 							i = steps.length - 1;
 						result += '<div class="pathleaf">' + steps[i] + '</div>';
-						result += '<div class="pathleafstat">Prevalence: ' + format_pct(node.pct_persons) + '</div>';
-						result += '<div class="pathleafstat">Number of People: ' + format_comma(node.num_persons) + '</div>';
-						result += '<div class="pathleafstat">Records per Person: ' + format_fixed(node.records_per_person) + '</div>';
+						result += '<div class="pathleafstat">Prevalence: ' + plot.formatters.format_pct(node.pct_persons) + '</div>';
+						result += '<div class="pathleafstat">Number of People: ' + plot.formatters.format_comma(node.num_persons) + '</div>';
+						result += '<div class="pathleafstat">Records per Person: ' + plot.formatters.format_fixed(node.records_per_person) + '</div>';
+						console.log(result)
 						return result;
 					},
 					gettitle: function (node) {
@@ -96,7 +94,7 @@
 				});
 			}
 			
-			$("#reload").on("click", function() {
+			document.querySelector("#reload").addEventListener("click", function() {
 				refreshPlot();	
 			});
 			

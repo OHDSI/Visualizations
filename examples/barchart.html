@@ -26,14 +26,14 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
 	<script src="../build/config.js"></script>
 	<script>
-		requirejs(['jquery', 'd3', 'atlascharts/barchart'], function($, d3, barchart) {
+		requirejs(['atlascharts/barchart'], function(barchart) {
 			var cartData;
 			var plot = new barchart();
+			var target = document.querySelector("#plot");
 
 			function refreshPlot() {
-				d3.selectAll("#plot svg").remove();
-				chartData = JSON.parse($("#chartData").val());
-				plot.render(chartData, "#plot", 400,275, {
+				chartData = JSON.parse(document.querySelector("#chartData").value);
+				plot.render(chartData, target, 400, 275, {
 					xLabel: "Cookie Type",
 					yLabel: "Votes",
 					showLabels: true,
@@ -41,7 +41,7 @@
 				});
 			}
 			
-			$("#reload").on("click", function() {
+			document.querySelector("#reload").addEventListener("click", function() {
 				refreshPlot();	
 			});
 			

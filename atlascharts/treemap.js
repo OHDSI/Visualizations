@@ -56,7 +56,7 @@ define(["d3", "d3-tip", "chart"],
 	      })
 	      .offset([3, 0])
 	      .html(function (d) {
-	      	`${options.gettitle(d.data)}<br/><br/>${options.getcontent(d.data)}`
+	      	return `${options.gettitle(d.data)}<br/><br/>${options.getcontent(d.data)}`
 	      });
 
 	    const treemap = d3.treemap()
