@@ -18,7 +18,7 @@ Authors: Christopher Knoll
 
 */
 
-define(["jquery", "d3"], function($, d3) {
+define(["d3"], function(d3) {
 	"use strict";
 
 	function areachart() {
@@ -33,7 +33,7 @@ define(["jquery", "d3"], function($, d3) {
 				xFormat: d3.format(',.0f'),
 				yFormat: d3.format('s')
 			};
-			options = $.extend({}, defaults, options);
+			options = Object.assign({}, defaults, options);
 
 			var width = w - options.margin.left - options.margin.right,
 				height = h - options.margin.top - options.margin.bottom;

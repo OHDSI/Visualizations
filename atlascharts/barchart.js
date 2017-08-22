@@ -18,144 +18,120 @@ Authors: Christopher Knoll
 
 */
 
-define(["jquery", "d3", "d3_tip", "./util"], function($, d3, d3_tip, util) {
+define(["d3", "d3-tip", "chart"],
+	function(d3, d3tip, Chart) {
 	"use strict";
 
-	function barchart() {
-		this.render = function (data, target, w, h, options) {
-			var defaults = {
-				label: 'label',
-				value: 'value',
-				rotate: 0,
-				colors: d3.scale.category10(),
-				textAnchor: 'middle',
-				showLabels: false
-			};
+	class BarChart extends Chart {
+	  get formatters() {
+	    return {
+	      commaseparated: d3.format(','),
+	      formatpercent: d3.format('.1%'),
+	    };
+	  }
 
-			options = $.extend({}, defaults, options);
+	  render(data, target, w, h, chartOptions) {
+	    // options
+	    const defaults = {
+	      label: 'label',
+	      value: 'value',
+	      rotate: 0,
+	      textAnchor: 'middle',
+	      showLabels: false,
+	    };
+	    const options = this.getOptions(defaults, chartOptions);
+	    // conatainer
+	    const svg = this.createSvg(target, w, h);
 
-			var label = options.label;
-			var value = options.value;
+	    const label = options.label;
+	    const value = options.value;
 
+	    let total = 0;
+	    data.forEach((d) => {
+	      total = total + d[value];
+	    });
 
-			var total = 0;
-			for (var d = 0; d < data.length; d = d + 1) {
-				total = total + data[d][value];
-			}
+	    // axes
+	    const x = d3.scaleBand()
+	      .range([0, width])
+	      .round(1.0 / data.length);
 
-			var margin = {
-					top: 20,
-					right: 10,
-					bottom: 25,
-					left: 10
-				},
-				width = w - margin.left - margin.right,
-				height = h - margin.top - margin.bottom;
+	    const y = d3scale.scaleLinear()
+	      .range([height, 0]);
 
-			var commaseparated = d3.format(',');
-			var formatpercent = d3.format('.1%');
+	    const xAxis = d3.axisBottom()
+	      .scale(x)
+	      .tickSize(2, 0);
 
-			var x = d3.scale.ordinal()
-				.rangeRoundBands([0, width], (1.0 / data.length));
+	    const yAxis = d3.axisLeft()
+	      .scale(y)
+	      .tickFormat(options.yFormat)
+	      .ticks(5);
 
-			var y = d3.scale.linear()
-				.range([height, 0]);
+	    var tip = d3tip()
+	      .attr('class', 'd3-tip')
+	      .offset([-10, 0])
+	      .html(d => d.value)
+	    svg.call(tip);
 
-			var xAxis = d3.svg.axis()
-				.scale(x)
-				.tickSize(2, 0)
-				.orient("bottom");
+	    x.domain(data.map(d => d[label]));
+	    y.domain([0, options.yMax || d3.max(data, d => d[value])]);
 
-			var yAxis = d3.svg.axis()
-				.scale(y)
-				.orient("left");
+	    svg.append('g')
+	      .attr('class', 'x axis')
+	      .attr('transform', `translate(0, ${height + 1})`)
+	      .call(xAxis)
+	      .selectAll('.tick text')
+	      .style('text-anchor', options.textAnchor)
+	      .attr('transform', d => `rotate(${options.rotate})`);
 
-			var svg = d3.select(target).append("svg")
-				.attr("viewBox", `0 0 ${w} ${h}`)
-				.attr('preserveAspectRatio', 'xMinYMin meet')
-				.append("g")
-				.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-				.attr("class", "barchart");
+	    svg.append('g')
+	      .attr('class', 'y axis')
+	      .attr('transform', 'translate(0, 0)')
+	      .call(yAxis);
 
-			x.domain(data.map(function (d) {
-				return d[label];
-			}));
-			y.domain([0, options.yMax || d3.max(data, function (d) {
-				return d[value];
-			})]);
+	    if (options.wrap) {
+	      svg.selectAll('.tick text')
+	        .call(this.wrap, x.bandwidth());
+	    }
 
-			svg.append("g")
-				.attr("class", "x axis")
-				.attr("transform", "translate(0," + (height + 1) + ")")
-				.call(xAxis)
-				.selectAll(".tick text")
-				.style("text-anchor", options.textAnchor)
-				.attr("transform", function (d) {
-					return "rotate(" + options.rotate + ")";
-				});
+	    svg.selectAll('.bar')
+	      .data(data)
+	      .enter()
+	      .append('rect')
+	      .attr('class', 'bar')
+	      .attr('x', d => x(d[label]))
+	      .attr('width', x.bandwidth())
+	      .attr('y', d => y(d[value]))
+	      .attr('height', d => height - y(d[value]))
+	      .attr('title', (d) => {
+	        let temp_title = `${d[label]}: ${this.formatters.commaseparated(d[value], ',')}`;
+	        if (total > 0) {
+	          temp_title += ` (${this.formatters.formatpercent(d[value] / total)})`;
+	        } else {
+	          temp_title += ` (${this.formatters.formatpercent(0)})`;
+	        }
+	        return temp_title;
+	      })
+	      .style('fill', d => options.colors[d[label]])
+	      .on('mouseover', d => tip.show(d, event.target))
+	      .on('mouseout', tip.hide)
+	      .exit()
+	      .remove();
 
-			if (options.wrap) {
-				svg.selectAll(".tick text")
-					.call(util.wrap, x.rangeBand());
-			}
+	    if (options.showLabels) {
+	      svg.selectAll('.barlabel')
+	        .data(data)
+	        .enter()
+	        .append('text')
+	        .attr('class', 'barlabel')
+	        .text(d => this.formatters.formatpercent(d[value] / total))
+	        .attr('x', d => x(d[label]) + x.rangeBand() / 2)
+	        .attr('y', d => y(d[value]) - 3)
+	        .attr('text-anchor', 'middle');
+	    }
+	  }
+	}
 
-			svg.selectAll(".bar")
-				.data(data)
-				.enter().append("rect")
-				.attr("class", "bar")
-				.attr("x", function (d) {
-					return x(d[label]);
-				})
-				.attr("width", x.rangeBand())
-				.attr("y", function (d) {
-					return y(d[value]);
-				})
-				.attr("height", function (d) {
-					return height - y(d[value]);
-				})
-				.attr("title", function (d) {
-					var temp_title = d[label] + ": " + commaseparated(d[value], ",");
-					if (total > 0) {
-						temp_title = temp_title + ' (' + formatpercent(d[value] / total) + ')';
-					} else {
-						temp_title = temp_title + ' (' + formatpercent(0) + ')';
-					}
-					return temp_title;
-				})
-				.style("fill", function (d) {
-					return options.colors(d[label]);
-				});
-
-			if (options.showLabels) {
-				svg.selectAll(".barlabel")
-					.data(data)
-					.enter()
-					.append("text")
-					.attr("class", "barlabel")
-					.text(function (d) {
-						return formatpercent(d[value] / total);
-					})
-					.attr("x", function (d) {
-						return x(d[label]) + x.rangeBand() / 2;
-					})
-					.attr("y", function (d) {
-						return y(d[value]) - 3;
-					})
-					.attr("text-anchor", "middle");
-			}
-
-			$(window).on("resize", {
-					container: $(target),
-					chart: $(target + " svg"),
-					aspect: w / h
-				},
-				function (event) {
-					var targetWidth = event.data.container.width();
-					event.data.chart.attr("width", targetWidth);
-					event.data.chart.attr("height", Math.round(targetWidth / event.data.aspect));
-				}).trigger("resize");
-		};
-	};
-
-	return barchart;
+	return BarChart;
 });
