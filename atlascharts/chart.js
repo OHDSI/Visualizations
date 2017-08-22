@@ -18,8 +18,8 @@ Author: Alexander Saltykov
 
 */
 
-define(["d3", "d3-selection", "d3-scale", "lodash"],
-	function(d3, d3selection, d3scale, lodash) {
+define(["d3", "d3-selection", "d3-scale", "clone", "flattenDeep", "values"],
+	function(d3, d3selection, d3scale, clone, flattenDeep, values) {
 	"use strict";
 	
 	class Chart {
@@ -46,8 +46,8 @@ define(["d3", "d3-selection", "d3-scale", "lodash"],
 		      yFormat: d3.format('s'),
 		      colors: d3scale.schemeCategory20.concat(d3scale.schemeCategory20c),
 		    },
-			  lodash.clone(chartSpecificDefaults),
-			  lodash.clone(customOptions)
+			  clone(chartSpecificDefaults),
+			  clone(customOptions)
 		  );
 	  }
 
@@ -237,7 +237,7 @@ define(["d3", "d3-selection", "d3-scale", "lodash"],
 		        q3: rawData.P75_VALUE[i],
 		        UIF: rawData.P90_VALUE[i],
 		      }), rawData);
-		      if (!lodash.flattenDeep(lodash.values(data)).length) {
+		      if (!flattenDeep(values(data)).length) {
 		        return null;
 		      }
 
