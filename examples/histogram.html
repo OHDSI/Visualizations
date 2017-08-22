@@ -35,21 +35,21 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
 	<script src="../build/config.js"></script>
 	<script>
-		requirejs(['jquery', 'd3', 'atlascharts/histogram'], function($, d3, histogram) {
+		requirejs(['atlascharts/histogram'], function(histogram) {
 			var cartData;
 			var plot = new histogram();
+			var target = document.querySelector('#plot');
 
 			function refreshPlot() {
-				d3.selectAll("#plot svg").remove();
-				chartData = JSON.parse($("#chartData").val());
-				plot.render(chartData, "#plot", 250,250, {
+				chartData = JSON.parse(document.querySelector("#chartData").value);
+				plot.render(chartData, target, 250, 250, {
 					ticks: 6,
 					xLabel: "Age",
 					yLabel: "Count"				
 				});
 			}
 			
-			$("#reload").on("click", function() {
+			document.querySelector("#reload").addEventListener("click", function() {
 				refreshPlot();	
 			});
 			

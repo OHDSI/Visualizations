@@ -44,24 +44,23 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
 	<script src="config-optimized.js"></script>
 	<script>
-		requirejs(['jquery', 'd3', 'atlascharts'], function($, d3, charts) {
+		requirejs(['atlascharts'], function(charts) {
 			var cartData;
 			// works differently with bundles: the entire module was required(), so line is contained by the charts module.
 			var lineplot = new charts.line();
+			var target = document.querySelector('#plot');
 
 			function refreshPlot() {
-				d3.selectAll("#plot svg").remove();
-				chartData = JSON.parse($("#chartData").val());
-				lineplot.render(chartData, $("#plot"), 300,300, {
+				chartData = JSON.parse(document.querySelector("#chartData").value);
+				lineplot.render(chartData, target, 300, 300, {
 					ticks: 4,
 					xLabel: "X Value",
 					yLabel: "Y Value",
-					showLegend: true,
-					colors: d3.scale.category10()					
+					showLegend: true,			
 				});
 			}
 			
-			$("#reload").on("click", function() {
+			document.querySelector("#reload").addEventListener("click", function() {
 				refreshPlot();	
 			});
 			

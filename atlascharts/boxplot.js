@@ -14,199 +14,227 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-Authors: Christopher Knoll, Mark Valez, Sigfried Gold
+Authors: Christopher Knoll, Mark Valez, Sigfried Gold, Alexander Saltykov
 
 */
 
-define(["jquery", "d3", "d3_tip", "./util"], function($, d3, d3_tip, util) {
+define(["d3", "d3-tip", "d3-scale", "chart"],
+	function(d3, d3tip, d3scale, Chart) {
 	"use strict";
 
-	function boxplot() {
-		this.render = function (data, target, w, h, options) {
-			var defaults = {
-				margin: {
-					top: 10,
-					right: 10,
-					bottom: 10,
-					left: 10
-				},
-				yFormat: d3.format('s'),
-				tickPadding: 15
-			};
+	class Boxplot extends Chart {
+	  render(data, target, w, h, chartOptions) {
+	    // options
+	    const options = this.getOptions(chartOptions);
+	    // container
+	    const svg = this.createSvg(target, w, h);
 
-			options = $.extend({}, defaults, options);
-			var valueFormatter = util.formatSI(3);
+	    const valueFormatter = this.formatters.formatSI(3);
 
-			var svg;
-			if (!$(target + " svg")[0]) {
-				svg = d3.select(target).append("svg")
-				.attr("viewBox", `0 0 ${w} ${h}`)
-				.attr('preserveAspectRatio', 'xMinYMin meet');
-			} else {
-				svg = d3.select(target + " svg");
-			}
+	    const tip = d3tip()
+	      .attr('class', 'd3-tip')
+	      .offset([-10, 0])
+	      .html(d =>
+	        `<table class='boxplotValues'>
+	          <tr>
+	            <td>Max:</td>
+	            <td>${valueFormatter(d.max)}</td>
+	          </tr>
+	          <tr>
+	            <td>P90:</td>
+	            <td>${valueFormatter(d.UIF)}</td>
+	          </tr>
+	          <tr>
+	            <td>P75:</td>
+	            <td>${valueFormatter(d.q3)}</td>
+	          </tr>
+	          <tr>
+	            <td>Median:</td>
+	            <td>${valueFormatter(d.median)}</td>
+	          </tr>
+	          <tr>
+	            <td>P25:</td>
+	            <td>${valueFormatter(d.q1)}</td>
+	          </tr>
+	          <tr>
+	            <td>P10:</td>
+	            <td>${valueFormatter(d.LIF)}</td>
+	          </tr>
+	          <tr>
+	            <td>Min:</td>
+	            <td>${valueFormatter(d.min)}</td>
+	          </tr>
+	        </table>`
+	      )
+	    svg.call(tip);
 
-			var tip = d3_tip()
-				.attr('class', 'd3-tip')
-				.offset([-10, 0])
-				.html(function (d) {
-					var content = '<table class="boxplotValues">' + '<tr><td>Max:</td><td>' + valueFormatter(d.max) + '</td></tr>' + '<tr><td>P90:</td><td>' + valueFormatter(d.UIF) + '</td></tr>' + '<tr><td>P75:</td><td>' + valueFormatter(d.q3) + '</td></tr>' + '<tr><td>Median:</td><td>' + valueFormatter(d.median) + '</td></tr>' + '<tr><td>P25:</td><td>' + valueFormatter(d.q1) + '</td></tr>' + '<tr><td>P10:</td><td>' + valueFormatter(d.LIF) + '</td></tr>' + '<tr><td>Min:</td><td>' + valueFormatter(d.min) + '</td></tr>' + '</table>';
-					return content;
-				});
-			svg.call(tip);
+	    // apply labels (if specified) and offset margins accordingly
+	    let xAxisLabelHeight = 0;
+	    let yAxisLabelWidth = 0;
+	    if (options.xLabel) {
+	      const xAxisLabel = svg.append('g')
+	        .attr('transform', `translate(${w / 2}, ${h - options.margins.bottom})`)
 
-			var bbox;
-			// apply labels (if specified) and offset margins accordingly
-			if (options.xLabel) {
-				var xAxisLabel = svg.append("g")
-					.attr("transform", "translate(" + w / 2 + "," + (h - 5) + ")");
+	      xAxisLabel.append('text')
+	        .attr('class', 'axislabel')
+	        .style('text-anchor', 'middle')
+	        .text(options.xLabel);
 
-				xAxisLabel.append("text")
-					.attr("class", "axislabel")
-					.style("text-anchor", "middle")
-					.text(options.xLabel);
+	      const bbox = xAxisLabel.node().getBBox();
+	      xAxisLabelHeight = bbox.height;
+	    }
 
-				if (xAxisLabel.node()) {
-					bbox = xAxisLabel.node().getBBox();
-					options.margin.bottom += bbox.height + 5;
-				}
-			}
+	    if (options.yLabel) {
+	      const yAxisLabel = svg.append('g')
+	        .attr(
+	          'transform',
+	          `translate(
+	            ${options.margins.left},
+	            ${((h - options.margins.bottom - options.margins.top) / 2) + options.margins.top}
+	          )`
+	        );
+	      yAxisLabel.append('text')
+	        .attr('class', 'axislabel')
+	        .attr('transform', 'rotate(-90)')
+	        .attr('y', 0)
+	        .attr('x', 0)
+	        .attr('dy', '1em')
+	        .style('text-anchor', 'middle')
+	        .text(options.yLabel);
 
-			if (options.yLabel) {
-				var yAxisLabel = svg.append("g")
-					.attr("transform", "translate(0," + (((h - options.margin.bottom - options.margin.top) / 2) + options.margin.top) + ")");
-				yAxisLabel.append("text")
-					.attr("class", "axislabel")
-					.attr("transform", "rotate(-90)")
-					.attr("y", 0)
-					.attr("x", 0)
-					.attr("dy", "1em")
-					.style("text-anchor", "middle")
-					.text(options.yLabel);
+	      const bbox = yAxisLabel.node().getBBox();
+	      yAxisLabelWidth = bbox.width;
+	    }
 
-				if (yAxisLabel.node()) {
-					bbox = yAxisLabel.node().getBBox();
-					options.margin.left += bbox.width + 5;
-				}
-			}
+	    let width = w - options.margins.left - yAxisLabelWidth - options.margins.right;
+	    let height = h - options.margins.top - xAxisLabelHeight - options.margins.bottom;
 
-			options.margin.left += options.tickPadding;
-			options.margin.bottom += options.tickPadding;
+	    // define the intial scale (range will be updated after we determine the final dimensions)
+	    const x = d3scale.scaleBand()
+	      .range([0, width])
+	      .round(1.0 / data.length)
+	      .domain(data.map(d => d.Category));
+	    const y = d3scale.scaleLinear()
+	      .range([height, 0])
+	      .domain([options.yMin || 0, options.yMax || d3.max(data, d => d.max)]);
 
-			var width = w - options.margin.left - options.margin.right;
-			var height = h - options.margin.top - options.margin.bottom;
+	    const xAxis = d3.axisBottom()
+	      .scale(x);
+	    const yAxis = d3.axisLeft()
+	      .scale(y)
+	      .tickFormat(options.yFormat)
+	      .ticks(5);
 
-			var x = d3.scale.ordinal()
-				.rangeRoundBands([0, width], (1.0 / data.length))
-				.domain(data.map(function (d) {
-					return d.Category;
-				}));
+	    // create temporary x axis
+	    const tempXAxis = svg.append('g').attr('class', 'axis');
+	    tempXAxis.call(xAxis);
 
-			var y = d3.scale.linear()
-				.range([height, 0])
-				.domain([options.yMin || 0, options.yMax || d3.max(data, function (d) {
-					return d.max;
-				})]);
+	    // update width & height based on temp xaxis dimension and remove
+	    const xAxisHeight = Math.round(tempXAxis.node().getBBox().height);
+	    const xAxisWidth = Math.round(tempXAxis.node().getBBox().width);
+	    height -= xAxisHeight;
+	    width -= Math.max(0, (xAxisWidth - width)); // trim width if
+	    // xAxisWidth bleeds over the allocated width.
+	    tempXAxis.remove();
 
-			var boxWidth = 10;
-			var boxOffset = (x.rangeBand() / 2) - (boxWidth / 2);
-			var whiskerWidth = boxWidth / 2;
-			var whiskerOffset = (x.rangeBand() / 2) - (whiskerWidth / 2);
+	    // create temporary y axis
+	    const tempYAxis = svg.append('g').attr('class', 'axis');
+	    tempYAxis.call(yAxis);
 
-			var chart = svg.append("g")
-				.attr("transform", "translate(" + options.margin.left + "," + options.margin.top + ")");
+	    // update height based on temp xaxis dimension and remove
+	    const yAxisWidth = Math.round(tempYAxis.node().getBBox().width);
+	    width -= yAxisWidth;
+	    tempYAxis.remove();
 
-			// draw main box and whisker plots
-			var boxplots = chart.selectAll(".boxplot")
-				.data(data)
-				.enter().append("g")
-				.attr("class", "boxplot")
-				.attr("transform", function (d) {
-					return "translate(" + x(d.Category) + ",0)";
-				});
+	    // reset axis ranges
+	    x.range([0, width]);
+	    y.range([height, 0]);
 
-			// for each g element (containing the boxplot render surface), draw the whiskers, bars and rects
-			boxplots.each(function (d, i) {
-				var boxplot = d3.select(this);
-				if (d.LIF !== d.q1) // draw whisker
-				{
-					boxplot.append("line")
-						.attr("class", "bar")
-						.attr("x1", whiskerOffset)
-						.attr("y1", y(d.LIF))
-						.attr("x2", whiskerOffset + whiskerWidth)
-						.attr("y2", y(d.LIF));
-					boxplot.append("line")
-						.attr("class", "whisker")
-						.attr("x1", x.rangeBand() / 2)
-						.attr("y1", y(d.LIF))
-						.attr("x2", x.rangeBand() / 2)
-						.attr("y2", y(d.q1));
-				}
+	    const boxWidth = 10;
+	    let boxOffset = (x.bandwidth() / 2) - (boxWidth / 2);
+	    let whiskerWidth = boxWidth / 2;
+	    let whiskerOffset = (x.bandwidth() / 2) - (whiskerWidth / 2);
 
-				boxplot.append("rect")
-					.attr("class", "box")
-					.attr("x", boxOffset)
-					.attr("y", y(d.q3))
-					.attr("width", boxWidth)
-					.attr("height", Math.max(1, y(d.q1) - y(d.q3)))
-					.on('mouseover', tip.show)
-					.on('mouseout', tip.hide);
+	    const chart = svg.append('g')
+	      .attr('transform', `translate(
+	          ${options.margins.left + yAxisLabelWidth + yAxisWidth},
+	          ${options.margins.top}
+	        )`);
 
-				boxplot.append("line")
-					.attr("class", "median")
-					.attr("x1", boxOffset)
-					.attr("y1", y(d.median))
-					.attr("x2", boxOffset + boxWidth)
-					.attr("y2", y(d.median));
+	    // draw main box and whisker plots
+	    const boxplots = chart.selectAll('.boxplot')
+	      .data(data)
+	      .enter().append('g')
+	      .attr('class', 'boxplot')
+	      .attr('transform', d => `translate(${x(d.Category)}, 0)`);
 
-				if (d.UIF !== d.q3) // draw whisker
-				{
-					boxplot.append("line")
-						.attr("class", "bar")
-						.attr("x1", whiskerOffset)
-						.attr("y1", y(d.UIF))
-						.attr("x2", x.rangeBand() - whiskerOffset)
-						.attr("y2", y(d.UIF));
-					boxplot.append("line")
-						.attr("class", "whisker")
-						.attr("x1", x.rangeBand() / 2)
-						.attr("y1", y(d.UIF))
-						.attr("x2", x.rangeBand() / 2)
-						.attr("y2", y(d.q3));
-				}
-				// to do: add max/min indicators
+	    // for each g element (containing the boxplot render surface), draw the whiskers, bars and rects
+	    boxplots.each(function (d, i) {
+	      const boxplot = d3.select(this);
+	      if (d.LIF != d.q1) { // draw whisker
+	        boxplot.append('line')
+	          .attr('class', 'bar')
+	          .attr('x1', whiskerOffset)
+	          .attr('y1', y(d.LIF))
+	          .attr('x2', whiskerOffset + whiskerWidth)
+	          .attr('y2', y(d.LIF));
+	        boxplot.append('line')
+	          .attr('class', 'whisker')
+	          .attr('x1', x.bandwidth() / 2)
+	          .attr('y1', y(d.LIF))
+	          .attr('x2', x.bandwidth() / 2)
+	          .attr('y2', y(d.q1));
+	      }
 
+	      boxplot.append('rect')
+	        .attr('class', 'box')
+	        .attr('x', boxOffset)
+	        .attr('y', y(d.q3))
+	        .attr('width', boxWidth)
+	        .attr('height', Math.max(1, y(d.q1) - y(d.q3)))
+	        .on('mouseover', d => tip.show(d, event.target))
+	        .on('mouseout', tip.hide);
 
-			});
+	      boxplot.append('line')
+	        .attr('class', 'median')
+	        .attr('x1', boxOffset)
+	        .attr('y1', y(d.median))
+	        .attr('x2', boxOffset + boxWidth)
+	        .attr('y2', y(d.median));
 
-			// draw x and y axis
-			var xAxis = d3.svg.axis()
-				.scale(x)
-				.orient("bottom");
+	      if (d.UIF != d.q3) { // draw whisker
+	        boxplot.append('line')
+	          .attr('class', 'bar')
+	          .attr('x1', whiskerOffset)
+	          .attr('y1', y(d.UIF))
+	          .attr('x2', x.bandwidth() - whiskerOffset)
+	          .attr('y2', y(d.UIF));
+	        boxplot.append('line')
+	          .attr('class', 'whisker')
+	          .attr('x1', x.bandwidth() / 2)
+	          .attr('y1', y(d.UIF))
+	          .attr('x2', x.bandwidth() / 2)
+	          .attr('y2', y(d.q3));
+	      }
+	      // to do: add max/min indicators
+	    });
 
-			var yAxis = d3.svg.axis()
-				.scale(y)
-				.orient("left")
-				.tickFormat(options.yFormat)
-				.ticks(5);
+	    // draw x and y axis
+	    chart.append('g')
+	      .attr('class', 'x axis')
+	      .attr('transform', `translate(0, ${height})`)
+	      .call(xAxis);
 
-			chart.append("g")
-				.attr("class", "x axis")
-				.attr("transform", "translate(0," + height + ")")
-				.call(xAxis);
+	    chart.selectAll('.tick text')
+	      .call(this.wrap, x.bandwidth() || x.range());
 
-			chart.selectAll(".tick text")
-				.call(util.wrap, x.rangeBand() || x.range());
-
-			chart.append("g")
-				.attr("class", "y axis")
-				.attr("transform", "translate(0," + 0 + ")")
-				.call(yAxis);
-
-		};
-	};
+	    chart.append('g')
+	      .attr('class', 'y axis')
+	      .attr('transform', `translate(0, 0)`)
+	      .call(yAxis);
+	  }
+	}
 	
-	return boxplot;
+	return Boxplot;
 	
 });
