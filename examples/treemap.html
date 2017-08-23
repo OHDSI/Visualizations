@@ -1,0 +1,106 @@
+<html>
+
+<head>
+	<title>Visualizations: treemap</title>
+	<link href="example.css" rel="stylesheet">
+	<link href="chart.css" rel="stylesheet">
+</head>
+
+<body>
+	<h1>Treemap Example</h1>
+	<div>This plot shows a simple treemap</div>
+	<div style="width:50%" id="plot">
+	<div class="treemap_zoomtarget"></div>
+	</div>
+	<hr/>
+	<div>Data:</div>
+	<textarea id="chartData" style="width:600px; height:400px">
+{
+ "name": "root",
+ "children": [
+  {
+   "name": "Inpatient Visit",
+   "num_persons": 9477394,
+   "id": 9201,
+   "path": "Inpatient Visit",
+   "pct_persons": 0.122430889363687,
+   "records_per_person": 1.72303377911692
+  },
+  {
+   "name": "Outpatient Visit",
+   "num_persons": 56980498,
+   "id": 9202,
+   "path": "Outpatient Visit",
+   "pct_persons": 0.736085578643856,
+   "records_per_person": 33.0220930150523
+  },
+  {
+   "name": "Emergency Room Visit",
+   "num_persons": 24110013,
+   "id": 9203,
+   "path": "Emergency Room Visit",
+   "pct_persons": 0.311458016218389,
+   "records_per_person": 4.28116890687699
+  },
+  {
+   "name": "Long Term Care Visit",
+   "num_persons": 467015,
+   "id": 42898160,
+   "path": "Long Term Care Visit",
+   "pct_persons": 0.00603299406948602,
+   "records_per_person": 2.37032215239339
+  }
+ ]
+}
+	</textarea>
+	<button id="reload">Reload</button>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
+	<script src="../build/config.js"></script>
+	<script>
+		requirejs(['atlascharts/treemap'], function(treemap) {
+			var cartData;
+			var plot = new treemap();
+			var target = document.querySelector('#plot');
+			
+			function refreshPlot() {
+				chartData = JSON.parse(document.querySelector("#chartData").value);
+				plot.render(chartData, target, 400, 275, {
+					getsizevalue: function (node) {
+						return node.num_persons;
+					},
+					getcolorvalue: function (node) {
+						return node.records_per_person;
+					},
+					getcontent: function (node) {
+						var result = '',
+							steps = node.path.split('||'),
+							i = steps.length - 1;
+						result += '<div class="pathleaf">' + steps[i] + '</div>';
+						result += '<div class="pathleafstat">Prevalence: ' + plot.formatters.format_pct(node.pct_persons) + '</div>';
+						result += '<div class="pathleafstat">Number of People: ' + plot.formatters.format_comma(node.num_persons) + '</div>';
+						result += '<div class="pathleafstat">Records per Person: ' + plot.formatters.format_fixed(node.records_per_person) + '</div>';
+						console.log(result)
+						return result;
+					},
+					gettitle: function (node) {
+						var title = '',
+							steps = node.path.split('||');
+						for (i = 0; i < steps.length - 1; i++) {
+							title += ' <div class="pathstep">' + Array(i + 1).join('&nbsp;&nbsp') + steps[i] + ' </div>';
+						}
+						return title;
+					},
+					useTip: true
+				});
+			}
+			
+			document.querySelector("#reload").addEventListener("click", function() {
+				refreshPlot();	
+			});
+			
+			refreshPlot();
+			
+		});
+	</script>
+</body>
+</html>

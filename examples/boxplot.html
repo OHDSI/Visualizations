@@ -1,0 +1,52 @@
+<html>
+
+<head>
+	<title>Visualizations: boxplot</title>
+	<link href="example.css" rel="stylesheet">
+	<link href="chart.css" rel="stylesheet">
+</head>
+
+<body>
+	<h1>Boxplot Example</h1>
+	<div>This plot shows a simple boxplot with multiple series</div>
+	<div style="width:30%" id="plot"></div>
+	<hr/>
+	<div>Data:</div>
+	<textarea id="chartData" style="width:600px; height:400px">
+[
+	{"Category": "Type 1", "min": 1, "LIF":5, "q1":12, "median":15, "q3": 22, "UIF":30, "max": 35},
+	{"Category": "Type 2", "min": 3, "LIF":9, "q1":16, "median":22, "q3": 25, "UIF":29, "max": 38},
+	{"Category": "Type 3", "min": 2, "LIF":6, "q1":9, "median":13, "q3": 18, "UIF":22, "max": 25},
+	{"Category": "Type 4", "min": 4, "LIF":11, "q1":16, "median":22, "q3": 28, "UIF":34, "max": 39}
+]
+	</textarea>
+	<button id="reload">Reload</button>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
+	<script src="../build/config.js"></script>
+	<script>
+		requirejs(['atlascharts/boxplot'], function(boxplot) {
+			var cartData;
+			var plot = new boxplot();
+			var target = document.querySelector('#plot');
+
+			function refreshPlot() {
+				chartData = JSON.parse(document.querySelector("#chartData").value);
+				plot.render(chartData, target, 300,300, {
+					ticks: 4,
+					xLabel: "Type",
+					yLabel: "Count",
+					showLegend: true				
+				});
+			}
+			
+			document.querySelector("#reload").addEventListener("click", function() {
+				refreshPlot();	
+			});
+			
+			refreshPlot();
+			
+			
+		});
+	</script>
+</body>
+</html>
