@@ -6,21 +6,9 @@ requirejs.config({
 			main: "main"
 		},
 		{
-			name: "values",
-			location: "../libs/_values"
-		},
-		{
 			name: "get",
 			location: "../libs/_get"
 		},
-		{
-			name: "flattenDeep",
-			location: "../libs/_flattenDeep"
-		},
-		{
-			name: "clone",
-			location: "../libs/_clone"
-		}
 	],
 	paths: {
 		"numeral": "https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min",

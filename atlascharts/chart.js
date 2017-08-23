@@ -18,8 +18,8 @@ Author: Alexander Saltykov
 
 */
 
-define(["d3", "d3-selection", "d3-scale", "clone", "flattenDeep", "values"],
-	function(d3, d3selection, d3scale, clone, flattenDeep, values) {
+define(["d3", "d3-selection", "d3-scale"],
+	function(d3, d3selection, d3scale) {
 	"use strict";
 	
 	class Chart {
@@ -46,8 +46,9 @@ define(["d3", "d3-selection", "d3-scale", "clone", "flattenDeep", "values"],
 		      yFormat: d3.format('s'),
 		      colors: d3scale.schemeCategory20.concat(d3scale.schemeCategory20c),
 		    },
-			  clone(chartSpecificDefaults),
-			  clone(customOptions)
+		    // clone objects
+			  Object.assign({}, chartSpecificDefaults),
+			  Object.assign({}, customOptions)
 		  );
 	  }
 
@@ -237,7 +238,11 @@ define(["d3", "d3-selection", "d3-scale", "clone", "flattenDeep", "values"],
 		        q3: rawData.P75_VALUE[i],
 		        UIF: rawData.P90_VALUE[i],
 		      }), rawData);
-		      if (!flattenDeep(values(data)).length) {
+		      const values = Object.values(data);
+		      const flattenData = values.reduce((accumulator, currentValue) =>
+		      		accumulator.concat(currentValue)
+		      	);
+		      if (!flattenData.length) {
 		        return null;
 		      }
 
