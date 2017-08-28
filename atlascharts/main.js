@@ -5,16 +5,15 @@ define(function(require) {
 		version: "0.0.1"
 	}
 	
-	var areachart = require("areachart");
-	var barchart = require("barchart");
-	var boxplot = require("boxplot");
-	var donut = require("donut");
-	var histogram = require("histogram");
-	var line = require("line");
-	var trellisline = require("trellisline");
-	var treemap = require("treemap");
-	var scatterplot = require("scatterplot");
-	var chart = require("chart");
+	var areachart = require("./areachart");
+	var barchart = require("./barchart");
+	var boxplot = require("./boxplot");
+	var donut = require("./donut");
+	var histogram = require("./histogram");
+	var line = require("./line");
+	var trellisline = require("./trellisline");
+	var treemap = require("./treemap");
+	var scatterplot = require("./scatterplot");
 	
 	module.areachart = areachart;
 	module.barchart = barchart;
@@ -25,7 +24,6 @@ define(function(require) {
 	module.trellisline = trellisline;
 	module.treemap = treemap;
 	module.scatterplot = scatterplot;
-	module.chart = chart;
 	
 	return module;
 	

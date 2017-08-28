@@ -29,15 +29,5 @@ requirejs.config({
 		"d3-time-format": "https://cdnjs.cloudflare.com/ajax/libs/d3-time-format/2.0.5/d3-time-format.min",
 		"d3-tip": "https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min",
 
-		"areachart": "../atlascharts/areachart",
-		"barchart": "../atlascharts/barchart",
-		"boxplot": "../atlascharts/boxplot",
-		"donut": "../atlascharts/donut",
-		"histogram": "../atlascharts/histogram",
-		"line": "../atlascharts/line",
-		"trellisline": "../atlascharts/trellisline",
-		"treemap": "../atlascharts/treemap",
-		"chart": "../atlascharts/chart",
-		"scatterplot": "../atlascharts/scatterplot"
 	},
 });

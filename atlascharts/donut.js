@@ -18,7 +18,7 @@ Authors: Christopher Knoll, Mark Valez, Sigfried Gold, Alexander Saltykov
 
 */
 
-define(["d3", "d3-tip", "d3-shape", "d3-drag", "numeral", "chart"],
+define(["d3", "d3-tip", "d3-shape", "d3-drag", "numeral", "./chart"],
 	function(d3, d3tip, d3shape, d3drag, numeral, Chart) {
 	"use strict";
 

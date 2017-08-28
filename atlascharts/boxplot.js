@@ -18,7 +18,7 @@ Authors: Christopher Knoll, Mark Valez, Sigfried Gold, Alexander Saltykov
 
 */
 
-define(["d3", "d3-tip", "d3-scale", "chart"],
+define(["d3", "d3-tip", "d3-scale", "./chart"],
 	function(d3, d3tip, d3scale, Chart) {
 	"use strict";
 
