@@ -18,8 +18,8 @@ Authors: Christopher Knoll
 
 */
 
-define(["d3", "d3-scale", "d3-shape", "chart", "line", "get"],
-	function(d3, d3scale, d3shape, Chart, line, get) {
+define(["d3", "d3-tip", "d3-scale", "d3-shape", "chart", "get"],
+	function(d3, d3tip, d3scale, d3shape, Chart, get) {
 	"use strict";
 
 	class Trellisline extends Chart {
@@ -29,7 +29,7 @@ define(["d3", "d3-scale", "d3-shape", "chart", "line", "get"],
 	      trellisSet: d3.keys(dataByTrellis),
 	      xFormat: d3.format('d'),
 	      yFormat: d3.format('d'),
-	      interpolate: (new line()).interpolation.linear,
+	      interpolate: d3.curveLinear,
 	    };
 	    const options = this.getOptions(defaults, chartOptions);
 	    // container

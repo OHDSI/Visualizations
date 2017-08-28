@@ -13,6 +13,7 @@ define(function(require) {
 	var line = require("line");
 	var trellisline = require("trellisline");
 	var treemap = require("treemap");
+	var scatterplot = require("scatterplot");
 	var chart = require("chart");
 	
 	module.areachart = areachart;
@@ -23,6 +24,7 @@ define(function(require) {
 	module.line = line;
 	module.trellisline = trellisline;
 	module.treemap = treemap;
+	module.scatterplot = scatterplot;
 	module.chart = chart;
 	
 	return module;
