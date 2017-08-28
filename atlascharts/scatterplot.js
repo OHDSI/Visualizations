@@ -61,6 +61,8 @@ define(['d3', 'd3-tip', 'chart'],
 							values: data
 						}];
 				}
+				let seriesColors = {};
+				data.forEach((series, i) => seriesColors[series.name] = options.colors[i]);
 					
 		    const tip = d3tip()
 		      .attr('class', 'd3-tip')
@@ -115,7 +117,7 @@ define(['d3', 'd3-tip', 'chart'],
 							.attr('y', (i * 15))
 							.attr('width', 10)
 							.attr('height', 10)
-							.style('fill', options.colors[i]);
+							.style('fill', seriesColors[d.name]);
 
 						const legendItem = legend.append('text')
 							.attr('x', 12)
@@ -209,7 +211,8 @@ define(['d3', 'd3-tip', 'chart'],
 				const series = vis.selectAll('.series')
 					.data(data)
 					.enter()
-					.append('g');
+					.append('g')
+					.style('fill', d => seriesColors[d.name]);
 
 				const seriesDots = series
 					.selectAll('.dot')
@@ -220,9 +223,6 @@ define(['d3', 'd3-tip', 'chart'],
 					.append('circle')
 					.attr('class', 'dot')
 					.attr('r', 1)
-					.style('fill', function (d, i) {
-						return options.colors[i];
-					})
 					.attr('transform', function (d) {
 						const xVal = x(d[options.xValue]);
 						const yVal = y(d[options.yValue]);
