@@ -35,7 +35,7 @@ define(["d3", "d3-selection", "d3-scale"],
 	  }
 
 	  getOptions(chartSpecificDefaults, customOptions) {
-	    return Object.assign({}, {
+	    const options = Object.assign({}, {
 		      margins: {
 		        top: 10,
 		        right: 10,
@@ -50,6 +50,8 @@ define(["d3", "d3-selection", "d3-scale"],
 			  Object.assign({}, chartSpecificDefaults),
 			  Object.assign({}, customOptions)
 		  );
+		  options.colors = d3scale.scaleOrdinal(options.colors);
+		  return options;
 	  }
 
 	  createSvg(target, width, height) {

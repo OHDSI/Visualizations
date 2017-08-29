@@ -65,12 +65,12 @@ define(["d3", "d3-tip", "d3-shape", "d3-drag", "numeral", "./chart"],
 	    }
 
 	    let total = 0;
-	    data.data.forEach((d) => {
-	      total += +d;
+	    data.forEach((d) => {
+	      total += +d.value;
 	    });
 
 	    const tooltipBuilder = this.donutDefaultTooltip(
-	      (d) => data.legend[d.index],
+	      (d) => d.label,
 	      (d) => numeral(d.value).format('0,0'), 
 	      (d) => this.formatters.formatpercent(total != 0 ? d.value / total : 0.0)
 	    );    
@@ -82,7 +82,7 @@ define(["d3", "d3-tip", "d3-shape", "d3-drag", "numeral", "./chart"],
 	      .html(tooltipBuilder);
 	    svg.call(tip);
 
-	    if (data.data.length > 0) {
+	    if (data.length > 0) {
 	      const vis = svg
 	        .append('g')
 	        .attr('id', 'chart');
@@ -98,19 +98,19 @@ define(["d3", "d3-tip", "d3-shape", "d3-drag", "numeral", "./chart"],
 	        .call(drag);
 
 	      legend.selectAll('rect')
-	        .data(data.legend)
+	        .data(data)
 	        .enter()
 	        .append('rect')
 	        .attr('x', 0)
 	        .attr('y', (d, i) => i * 15)
 	        .attr('width', 10)
 	        .attr('height', 10)
-	        .style('fill', (d, index) => options.colors[index]);
+	        .style('fill', (d) => options.colors(d.id));
 
 	      let legendWidth = 0;
 	      const textDisplace = 12;
 	      const legendItems = legend.selectAll('g.legend-item')
-	        .data(data.legend)
+	        .data(data)
 	        .enter()
 	        .append('g')
 	        .attr('class', 'legend-item');
@@ -119,13 +119,13 @@ define(["d3", "d3-tip", "d3-shape", "d3-drag", "numeral", "./chart"],
 	        .append('text')
 	        .attr('x', textDisplace)
 	        .attr('y', (d, i) => (i * 15) + 9)
-	        .text(d => d);
+	        .text(d => d.label);
 
 	      legendItems
 	        .append('title')
 	        .attr('x', textDisplace)
 	        .attr('y', (d, i) => (i * 15) + 9)
-	        .text(d => d);
+	        .text(d => d.label);
 
 	      legendItems.each(function() {
 	        const legendItemWidth = this.getBBox().width;
@@ -154,20 +154,20 @@ define(["d3", "d3-tip", "d3-shape", "d3-drag", "numeral", "./chart"],
 
 	      const pie = d3.pie() // this will create arc data for us given a list of values
 	        .value((d) => {
-	          return d > 0 ? Math.max(d, total * .015) : 0;
+	          return d.value > 0 ? Math.max(d.value, total * .015) : 0;
 	          // we want slices to appear if they have data, so we return a minimum of
 	          // 1.5% of the overall total if the datapoint has a value > 0.
 	        }); // we must tell it out to access the value of each element in our data array
 
 	      const arcs = vis.selectAll('g.slice') // this selects all <g> elements with class slice (there aren't any yet)
-	        .data(pie) // associate the generated pie data (an array of arcs, each having startAngle, endAngle and value properties)
+	        .data(pie(data)) // associate the generated pie data (an array of arcs, each having startAngle, endAngle and value properties)
 	        .enter() // this will create <g> elements for every 'extra' data element that should be associated with a selection. The result is creating a <g> for every object in the data array
 	        .append('g') // create a group to hold each slice (we will have a <path> and a <text> element associated with each slice)
 	        .attr('class', 'slice'); // allow us to style things in the slices (like text)
 
 	      arcs.append('path')
-	        .attr('fill', (d, index) => {
-	          return options.colors[index];
+	        .attr('fill', (d) => {
+	          return options.colors(d.data.id);
 	        }) // set the color for each slice to be chosen from the color function defined above
 	        .attr('stroke', '#fff')
 	        .attr('stroke-width', 5)

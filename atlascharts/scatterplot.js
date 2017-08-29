@@ -35,7 +35,6 @@ define(['d3', 'd3-tip', './chart'],
 				cssClass: 'lineplot',
 				ticks: 10,
 				showSeriesLabel: false,
-				colorScale: null,
 				labelIndexDate: false,
 				colorBasedOnIndex: false,
 				showXAxis: true,
@@ -47,6 +46,13 @@ define(['d3', 'd3-tip', './chart'],
 				}
 			};
 	    const options = this.getOptions(defaults, chartOptions);
+	    if (chartOptions.colors) {
+		    options.colors = d3.scaleOrdinal(Object.values(chartOptions.colors))
+		    	.domain(Object.keys(chartOptions.colors));
+	    } else {
+		    options.colors = d3.scaleOrdinal(d3.schemeCategory20)
+		    	.domain(data.map(series => series.name));
+	    }
 
 	    // container
 	    const svg = this.createSvg(target, w, h);
@@ -61,8 +67,6 @@ define(['d3', 'd3-tip', './chart'],
 							values: data
 						}];
 				}
-				let seriesColors = {};
-				data.forEach((series, i) => seriesColors[series.name] = options.colors[i]);
 					
 		    const tip = d3tip()
 		      .attr('class', 'd3-tip')
@@ -117,7 +121,7 @@ define(['d3', 'd3-tip', './chart'],
 							.attr('y', (i * 15))
 							.attr('width', 10)
 							.attr('height', 10)
-							.style('fill', seriesColors[d.name]);
+							.style('fill', options.colors(d.name));
 
 						const legendItem = legend.append('text')
 							.attr('x', 12)
@@ -211,18 +215,23 @@ define(['d3', 'd3-tip', './chart'],
 				const series = vis.selectAll('.series')
 					.data(data)
 					.enter()
-					.append('g')
-					.style('fill', d => seriesColors[d.name]);
+					.append('g');
 
 				const seriesDots = series
 					.selectAll('.dot')
 					.data(function (series) {
-						return series.values;
+						return series.values.map(value => ({
+							...value,
+							seriesName: series.name,
+						}));
 					})
 					.enter()
 					.append('circle')
 					.attr('class', 'dot')
 					.attr('r', 1)
+					.style('fill', function (d, i) {
+						return options.colors(d.seriesName);
+					})
 					.attr('transform', function (d) {
 						const xVal = x(d[options.xValue]);
 						const yVal = y(d[options.yValue]);
