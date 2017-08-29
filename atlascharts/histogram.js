@@ -18,7 +18,7 @@ Authors: Christopher Knoll, Alexander Saltykov
 
 */
 
-define(["d3", "d3-tip", "d3-scale", "numeral", "chart"],
+define(["d3", "d3-tip", "d3-scale", "numeral", "./chart"],
 	function(d3, d3tip, d3scale, numeral, Chart) {
 	"use strict";
 

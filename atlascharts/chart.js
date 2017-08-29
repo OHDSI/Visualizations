@@ -35,7 +35,7 @@ define(["d3", "d3-selection", "d3-scale"],
 	  }
 
 	  getOptions(chartSpecificDefaults, customOptions) {
-	    return Object.assign({}, {
+	    const options = Object.assign({}, {
 		      margins: {
 		        top: 10,
 		        right: 10,
@@ -44,12 +44,13 @@ define(["d3", "d3-selection", "d3-scale"],
 		      },
 		      xFormat: d3.format(',.0f'),
 		      yFormat: d3.format('s'),
-		      colors: d3scale.schemeCategory20.concat(d3scale.schemeCategory20c),
+		      colors: d3scale.scaleOrdinal(d3scale.schemeCategory20.concat(d3scale.schemeCategory20c)),
 		    },
 		    // clone objects
 			  Object.assign({}, chartSpecificDefaults),
 			  Object.assign({}, customOptions)
 		  );
+		  return options;
 	  }
 
 	  createSvg(target, width, height) {

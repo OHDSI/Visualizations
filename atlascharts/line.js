@@ -17,7 +17,7 @@ limitations under the License.
 Authors: Christopher Knoll, Mark Valez, Sigfried Gold, Alexander Saltykov
 
 */
-define(["d3", "d3-tip", "d3-shape", "d3-scale", "chart"],
+define(["d3", "d3-tip", "d3-shape", "d3-scale", "./chart"],
 	function(d3, d3tip, d3shape, d3scale, Chart) {
 	"use strict";
 
@@ -133,7 +133,7 @@ define(["d3", "d3-tip", "d3-shape", "d3-scale", "chart"],
 	            .attr('y', (i * 15))
 	            .attr('width', 10)
 	            .attr('height', 10)
-	            .style('fill', options.colors[i]);
+	            .style('fill', options.colors(d.name));
 
 	          const legendItem = legend.append('text')
 	            .attr('x', 12)
@@ -253,7 +253,7 @@ define(["d3", "d3-tip", "d3-shape", "d3-scale", "chart"],
 	        );
 
 	      if (options.colors) {
-	        seriesLines.style('stroke', (d, i) => options.colors[i]);
+	        seriesLines.style('stroke', (d, i) => options.colors(d.name));
 	      }
 
 	      if (options.showSeriesLabel) {
