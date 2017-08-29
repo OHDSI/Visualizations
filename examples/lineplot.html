@@ -48,6 +48,7 @@
 			var cartData;
 			var lineplot = new line();
 			var target = document.querySelector('#plot');
+			var seriesColors = { "Ascending": "#00ff00", "Descending": "#ff0000", "Stable": "#0000ff" }
 
 			function refreshPlot() {
 				chartData = JSON.parse(document.querySelector("#chartData").value);
@@ -56,7 +57,7 @@
 					xLabel: "X Value",
 					yLabel: "Y Value",
 					showLegend: true,
-					colors: ['#f00', '#0f0', '#00f']
+					colors: seriesName => seriesColors[seriesName]
 				});
 			}
 			

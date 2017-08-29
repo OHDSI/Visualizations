@@ -220,10 +220,7 @@ define(['d3', 'd3-tip', './chart'],
 				const seriesDots = series
 					.selectAll('.dot')
 					.data(function (series) {
-						return series.values.map(value => ({
-							...value,
-							seriesName: series.name,
-						}));
+						return series.values.map(value => Object.assign({}, value, { seriesName: series.name }));
 					})
 					.enter()
 					.append('circle')

@@ -44,13 +44,12 @@ define(["d3", "d3-selection", "d3-scale"],
 		      },
 		      xFormat: d3.format(',.0f'),
 		      yFormat: d3.format('s'),
-		      colors: d3scale.schemeCategory20.concat(d3scale.schemeCategory20c),
+		      colors: d3scale.scaleOrdinal(d3scale.schemeCategory20.concat(d3scale.schemeCategory20c)),
 		    },
 		    // clone objects
 			  Object.assign({}, chartSpecificDefaults),
 			  Object.assign({}, customOptions)
 		  );
-		  options.colors = d3scale.scaleOrdinal(options.colors);
 		  return options;
 	  }
 

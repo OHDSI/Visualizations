@@ -41,8 +41,14 @@ define(["d3", "d3-tip", "d3-scale", "./chart"],
 	    };
 	    const options = this.getOptions(defaults, chartOptions);
 	    // conatainer
-	    const svg = this.createSvg(target, w, h);
+	    let svg = this.createSvg(target, w, h);
 
+	    var tip = d3tip()
+	      .attr('class', 'd3-tip')
+	      .offset([-10, 0])
+	      .html(d => d.value)
+	    svg.call(tip);
+			
 	    const label = options.label;
 	    const value = options.value;
 
@@ -51,13 +57,17 @@ define(["d3", "d3-tip", "d3-scale", "./chart"],
 	      total = total + d[value];
 	    });
 
+	    let width = w - options.margins.left - options.margins.right;
+	    let height = h - options.margins.top - options.margins.bottom;
+			
 	    // axes
 	    const x = d3.scaleBand()
-	      .range([0, w])
+	      .range([0, width])
+				.padding(.1)
 	      .round(1.0 / data.length);
 
 	    const y = d3scale.scaleLinear()
-	      .range([h, 0]);
+	      .range([height, 0]);
 
 	    const xAxis = d3.axisBottom()
 	      .scale(x)
@@ -68,32 +78,57 @@ define(["d3", "d3-tip", "d3-scale", "./chart"],
 	      .tickFormat(options.yFormat)
 	      .ticks(5);
 
-	    var tip = d3tip()
-	      .attr('class', 'd3-tip')
-	      .offset([-10, 0])
-	      .html(d => d.value)
-	    svg.call(tip);
-
 	    x.domain(data.map(d => d[label]));
 	    y.domain([0, options.yMax || d3.max(data, d => d[value])]);
 
+	    // create temporary x axis
+	    const tempXAxis = svg.append('g').attr('class', 'axis');
+	    tempXAxis.call(xAxis);
+
+	    // update width & height based on temp xaxis dimension and remove
+	    const xAxisHeight = Math.round(tempXAxis.node().getBBox().height);
+	    const xAxisWidth = Math.round(tempXAxis.node().getBBox().width);
+	    height -= xAxisHeight;
+	    width -= Math.max(0, (xAxisWidth - width)); // trim width if
+	    // xAxisWidth bleeds over the allocated width.
+	    tempXAxis.remove();
+
+	    // create temporary y axis
+	    const tempYAxis = svg.append('g').attr('class', 'axis');
+	    tempYAxis.call(yAxis);
+
+	    // update height based on temp xaxis dimension and remove
+	    const yAxisWidth = Math.round(tempYAxis.node().getBBox().width);
+	    width -= yAxisWidth;
+	    tempYAxis.remove();
+
+	    // reset axis ranges
+	    x.range([0, width]);
+	    y.range([height, 0]);
+			
+			svg = svg.append('g')
+	      .attr('transform', `translate(
+	          ${options.margins.left + yAxisWidth},
+	          ${options.margins.top}
+	        )`);
+			
 	    svg.append('g')
 	      .attr('class', 'x axis')
-	      .attr('transform', `translate(0, ${h + 1})`)
+	      .attr('transform', `translate(0, ${height})`)
 	      .call(xAxis)
 	      .selectAll('.tick text')
 	      .style('text-anchor', options.textAnchor)
 	      .attr('transform', d => `rotate(${options.rotate})`);
 
-	    svg.append('g')
-	      .attr('class', 'y axis')
-	      .attr('transform', 'translate(0, 0)')
-	      .call(yAxis);
-
 	    if (options.wrap) {
 	      svg.selectAll('.tick text')
 	        .call(this.wrap, x.bandwidth());
 	    }
+
+	    svg.append('g')
+	      .attr('class', 'y axis')
+	      .attr('transform', 'translate(0, 0)')
+	      .call(yAxis);
 
 	    svg.selectAll('.bar')
 	      .data(data)
@@ -103,7 +138,7 @@ define(["d3", "d3-tip", "d3-scale", "./chart"],
 	      .attr('x', d => x(d[label]))
 	      .attr('width', x.bandwidth())
 	      .attr('y', d => y(d[value]))
-	      .attr('height', d => h - y(d[value]))
+	      .attr('height', d => height - y(d[value]))
 	      .attr('title', (d) => {
 	        let temp_title = `${d[label]}: ${this.formatters.commaseparated(d[value], ',')}`;
 	        if (total > 0) {

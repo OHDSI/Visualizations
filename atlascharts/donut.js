@@ -34,7 +34,6 @@ define(["d3", "d3-tip", "d3-shape", "d3-drag", "numeral", "./chart"],
 	    const options = this.getOptions(chartOptions);
 	    // container
 	    const svg = this.createSvg(target, w, h);    
-	    svg.data([data.data]);
 
 	    function dragstarted() {
 	      const legendContainer = d3.select(this);
@@ -172,7 +171,7 @@ define(["d3", "d3-tip", "d3-shape", "d3-drag", "numeral", "./chart"],
 	        .attr('stroke', '#fff')
 	        .attr('stroke-width', 5)
 	        .attr('title', d => d.label)
-	        .on('mouseover', d => tip.show(d, event.target))
+	        .on('mouseover', d => tip.show(d.data, event.target))
 	        .on('mouseout', tip.hide)
 	        .attr('d', arc); // this creates the actual SVG path using the associated data (pie) with the arc drawing function
 
