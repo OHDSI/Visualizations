@@ -113,7 +113,7 @@ define(["d3", "d3-tip", "d3-scale", "./chart"],
 	        }
 	        return temp_title;
 	      })
-	      .style('fill', d => options.colors[d[label]])
+	      .style('fill', d => options.colors(d[label]))
 	      .on('mouseover', d => tip.show(d, event.target))
 	      .on('mouseout', tip.hide)
 	      .exit()

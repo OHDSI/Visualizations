@@ -14,10 +14,23 @@
 	<div>Data:</div>
 	<textarea id="chartData" style="width:600px; height:400px">
 [
-	10,
-	20,
-	30,
-	40
+	{
+		"id": 0,
+		"value": 10,
+		"label": "first"
+	},{
+		"id": 2,
+		"value": 20,
+		"label": "second"
+	},{
+		"id": 1,
+		"value": 30,
+		"label": "third"
+	},{
+		"id": 3,
+		"value": 40,
+		"label": "fourth"
+	}
 ]
 	</textarea>
 	<button id="reload">Reload</button>
@@ -32,15 +45,7 @@
 			function refreshPlot() {
 				chartData = JSON.parse(document.querySelector("#chartData").value);
 				plot.render(
-					{
-						data: chartData,
-						legend: [
-							'Type 1',
-							'Type 2',
-							'Type 3',
-							'Type 4'
-						],
-					},
+					chartData,
 					target,
 					300,
 					300,
@@ -48,7 +53,8 @@
 						ticks: 4,
 						xLabel: "Type",
 						yLabel: "Count",
-						showLegend: true				
+						showLegend: true,
+						colors: ['#f00', '#0f0', '#00f', '#555']
 					}
 				);
 			}
