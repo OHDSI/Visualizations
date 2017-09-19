@@ -1,0 +1,54 @@
+<html>
+
+<head>
+	<title>Visualizations: barchart</title>
+	<link href="example.css" rel="stylesheet">
+	<link href="chart.css" rel="stylesheet">
+</head>
+
+<body>
+	<h1>Barchart Example</h1>
+	<div>This plot shows a simple barchart</div>
+	<div style="width:50%" id="plot"></div>
+	<hr/>
+	<div>Data:</div>
+	<textarea id="chartData" style="width:600px; height:400px">
+[
+	{"label": "Chocolate Chip", "value": 5},
+	{"label": "Oatmeal Raisin", "value": 12},
+	{"label": "Sugar", "value": 9},
+	{"label": "Mint", "value": 3},
+	{"label": "Fortune Cookie", "value": 15},
+	{"label": "Gingerbread", "value": 11}
+]
+	</textarea>
+	<button id="reload">Reload</button>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
+	<script src="../build/config.js"></script>
+	<script>
+		requirejs(['atlascharts/barchart'], function(barchart) {
+			var cartData;
+			var plot = new barchart();
+			var target = document.querySelector("#plot");
+
+			function refreshPlot() {
+				chartData = JSON.parse(document.querySelector("#chartData").value);
+				plot.render(chartData, target, 400, 275, {
+					xLabel: "Cookie Type",
+					yLabel: "Votes",
+					showLabels: true,
+					wrap: true,
+					colors: label => '#00f'
+				});
+			}
+			
+			document.querySelector("#reload").addEventListener("click", function() {
+				refreshPlot();	
+			});
+			
+			refreshPlot();
+			
+		});
+	</script>
+</body>
+</html>

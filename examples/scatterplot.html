@@ -1,0 +1,72 @@
+<html>
+
+<head>
+	<title>Visualizations: scatterplot</title>
+	<link href="example.css" rel="stylesheet">
+	<link href="chart.css" rel="stylesheet">
+</head>
+
+<body>
+	<h1>Scatterplot Example</h1>
+	<div>This plot shows a simple scatterplot</div>
+	<div style="width:50%" id="plot">
+	</div>
+	<hr/>
+	<div>Data:</div>
+	<textarea id="chartData" style="width:600px; height:400px">
+[
+	{	"name":"Ascending",
+	"values":[
+		{"xValue": 0, "yValue": 1},
+		{"xValue": 1, "yValue": 2},
+		{"xValue": 2, "yValue": 4},
+		{"xValue": 3, "yValue": 7},
+		{"xValue": 4, "yValue": 9}
+	]},
+	{	"name":"Descending",
+	"values":[
+		{"xValue": 0, "yValue": 9},
+		{"xValue": 1, "yValue": 7},
+		{"xValue": 2, "yValue": 4},
+		{"xValue": 3, "yValue": 2},
+		{"xValue": 4, "yValue": 1}
+	]},
+	{	"name":"Stable",
+	"values":[
+		{"xValue": 0, "yValue": 5},
+		{"xValue": 1, "yValue": 4},
+		{"xValue": 2, "yValue": 6},
+		{"xValue": 3, "yValue": 5},
+		{"xValue": 4, "yValue": 5}
+	]}	
+]
+	</textarea>
+	<button id="reload">Reload</button>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
+	<script src="../build/config.js"></script>
+	<script>
+		requirejs(['atlascharts/scatterplot'], function(scatterplot) {
+			var cartData;
+			var plot = new scatterplot();
+			var target = document.querySelector('#plot');
+			
+			function refreshPlot() {
+				chartData = JSON.parse(document.querySelector("#chartData").value);
+				plot.render(chartData, target, 400, 275, {
+					ticks: 4,
+					xLabel: "X Value",
+					yLabel: "Y Value",
+					showLegend: true,			
+				});
+			}
+			
+			document.querySelector("#reload").addEventListener("click", function() {
+				refreshPlot();	
+			});
+			
+			refreshPlot();
+			
+		});
+	</script>
+</body>
+</html>

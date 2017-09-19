@@ -1,0 +1,52 @@
+<html>
+
+<head>
+	<title>Visualizations: areachart</title>
+	<link href="example.css" rel="stylesheet">
+	<link href="chart.css" rel="stylesheet">
+</head>
+
+<body>
+	<h1>Areachart Example</h1>
+	<div>This plot shows a simple areachart</div>
+	<div style="width:50%" id="plot"></div>
+	<hr/>
+	<div>Data:</div>
+	<textarea id="chartData" style="width:600px; height:400px">
+[
+	{"x": 0, "y": 5},
+	{"x": 1, "y": 15},
+	{"x": 2, "y": 30},
+	{"x": 3, "y": 24},
+	{"x": 4, "y": 22},
+	{"x": 5, "y": 13},
+	{"x": 6, "y": 7},
+	{"x": 7, "y": 12},
+	{"x": 8, "y": 19},
+	{"x": 9, "y": 25}
+]
+	</textarea>
+	<button id="reload">Reload</button>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
+	<script src="../build/config.js"></script>
+	<script>
+		requirejs(['jquery', 'd3', 'atlascharts/areachart'], function($, d3, areachart) {
+			var cartData;
+			var plot = new areachart();
+
+			function refreshPlot() {
+				d3.selectAll("#plot svg").remove();
+				chartData = JSON.parse($("#chartData").val());
+				plot.render(chartData, "#plot", 400,275);
+			}
+			
+			$("#reload").on("click", function() {
+				refreshPlot();	
+			});
+			
+			refreshPlot();
+			
+		});
+	</script>
+</body>
+</html>

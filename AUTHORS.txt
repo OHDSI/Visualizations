@@ -1,0 +1,6 @@
+Authors ordered by first contribution.
+
+Christopher Knoll <cknoll@ohdsi.org>
+Mark Valez
+Anthony Sena
+Sigfried Gold

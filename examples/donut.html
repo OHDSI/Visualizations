@@ -1,0 +1,71 @@
+<html>
+
+<head>
+	<title>Visualizations: donut</title>
+	<link href="example.css" rel="stylesheet">
+	<link href="chart.css" rel="stylesheet">
+</head>
+
+<body>
+	<h1>Donut Example</h1>
+	<div>This plot shows a simple donut</div>
+	<div style="width:30%" id="plot"></div>
+	<hr/>
+	<div>Data:</div>
+	<textarea id="chartData" style="width:600px; height:400px">
+[
+	{
+		"id": 0,
+		"value": 10,
+		"label": "first"
+	},{
+		"id": 2,
+		"value": 20,
+		"label": "second"
+	},{
+		"id": 1,
+		"value": 30,
+		"label": "third"
+	},{
+		"id": 3,
+		"value": 40,
+		"label": "fourth"
+	}
+]
+	</textarea>
+	<button id="reload">Reload</button>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
+	<script src="../build/config.js"></script>
+	<script>
+		requirejs(['atlascharts/donut'], function(donut) {
+			var cartData;
+			var plot = new donut();
+			var target = document.querySelector('#plot');
+
+			function refreshPlot() {
+				chartData = JSON.parse(document.querySelector("#chartData").value);
+				plot.render(
+					chartData,
+					target,
+					300,
+					300,
+					{
+						ticks: 4,
+						xLabel: "Type",
+						yLabel: "Count",
+						showLegend: true
+					}
+				);
+			}
+			
+			document.querySelector("#reload").addEventListener("click", function() {
+				refreshPlot();	
+			});
+			
+			refreshPlot();
+			
+			
+		});
+	</script>
+</body>
+</html>

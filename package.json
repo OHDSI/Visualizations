@@ -1,9 +1,12 @@
 {
-  "name": "Visualizations",
-  "version": "1.0.0",
+  "name": "@ohdsi/atlascharts",
+  "version": "1.1.0",
   "description": "Visualizations is a collection of JavaScript modules to support D3 visualizations in web-based applications",
-  "main": "index.js",
+  "main": "dist/atlascharts.min.js",
   "scripts": {
+    "build:min": "google-closure-compiler-js dist/atlascharts.js > dist/atlascharts.min.js",
+    "build:dev": "node node_modules/requirejs/bin/r.js -o build/build-dev.js",
+    "build": "npm run build:dev && npm run build:min",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -15,27 +18,20 @@
     "Atlas",
     "charts"
   ],
+  "contributors": [
+    {
+      "name": "Chris Knoll",
+      "email": "cknoll@ohdsi.org"
+    }
+  ],
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/OHDSI/Visualizations/issues"
   },
   "homepage": "https://github.com/OHDSI/Visualizations#readme",
-  "peerDependencies": {
-    "d3": "^4.9.1",
-    "lodash": "^4.17.4",
-    "numeral": "^2.0.6"
-  },
-  "devDependencies": {
-    "babel-core": "^6.25.0",
-    "babel-loader": "^7.1.0",
-    "babel-preset-latest": "^6.24.1",
-    "babel-preset-stage-2": "^6.24.1",
-    "webpack": "^3.0.0"
-  },
   "dependencies": {
-    "d3-drag": "^1.1.0",
-    "d3-scale": "^1.0.6",
-    "d3-selection": "^1.1.0",
-    "d3-shape": "^1.2.0",
-    "d3-tip": "^0.7.1"
+    "d3-tip": "^0.7.1",
+    "google-closure-compiler-js": "^20170626.0.0",
+    "requirejs": "^2.3.4"
   }
 }
