@@ -6,6 +6,7 @@ define(function(require) {
 	}
 	
 	var chart = require("./chart");
+	var aster = require("./aster");
 	var areachart = require("./areachart");
 	var barchart = require("./barchart");
 	var boxplot = require("./boxplot");
@@ -17,6 +18,7 @@ define(function(require) {
 	var scatterplot = require("./scatterplot");
 	
 	module.chart = chart;
+	module.aster = aster;
 	module.areachart = areachart;
 	module.barchart = barchart;
 	module.boxplot = boxplot;
