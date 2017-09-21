@@ -241,7 +241,8 @@ define(["d3", "d3-selection", "d3-scale"],
 		      }), rawData);
 		      const values = Object.values(data);
 		      const flattenData = values.reduce((accumulator, currentValue) =>
-		      		accumulator.concat(currentValue)
+		      		accumulator.concat(currentValue),
+		      		[]
 		      	);
 		      if (!flattenData.length) {
 		        return null;
