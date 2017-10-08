@@ -2,7 +2,7 @@
   "name": "@ohdsi/atlascharts",
   "version": "1.2.0",
   "description": "Visualizations is a collection of JavaScript modules to support D3 visualizations in web-based applications",
-  "main": "dist/atlascharts.min.js",
+  "main": "dist/atlascharts.umd.js",
   "scripts": {
     "build:amd:min": "google-closure-compiler-js dist/atlascharts.js > dist/atlascharts.min.js",
     "build:amd:dev": "node node_modules/requirejs/bin/r.js -o build/build-dev.js",
