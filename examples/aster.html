@@ -1,0 +1,58 @@
+<html>
+
+<head>
+	<title>Visualizations: aster plot</title>
+	<link href="example.css" rel="stylesheet">
+	<link href="chart.css" rel="stylesheet">
+</head>
+
+<body>
+	<h1>Aster Example</h1>
+	<div>This plot shows a simple aster plot</div>
+	<div style="width:225px" id="plot"></div>
+	<hr/>
+	<div>Data:</div>
+<textarea id="chartData" style="width:400px; height:150px">
+id,weight,percent
+Condition,19600,7
+Drug,3499,43
+Measurement,6699,47
+Procedure,4901,3
+</textarea>
+	<button id="reload">Reload</button>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
+	<script src="../build/config.js"></script>
+	<script>
+		requirejs(['atlascharts/aster', 'd3-dsv'], function(aster, d3dsv) {
+			var cartData;
+			var plot = new aster();
+			var target = document.querySelector('#plot');
+			var seriesColors = { "Condition": "#1f77b4", "Drug": "#d62728", "Procedure": "#2ca02c", "Measurement": "#9467bd", "Visit": "#ff7f0e", Observation: "#e377c2"}
+
+			function refreshPlot() {
+				chartData = d3dsv.csvParse(document.querySelector("#chartData").value).map(d => {
+					d.weight = +d.weight;
+					d.percent = +d.percent;
+					return d;
+				});
+				
+				plot.render(
+					chartData,
+					target,
+					200,
+					200,
+					{ maxPercent: 100.0, colors: seriesName => seriesColors[seriesName] }
+				);
+			}
+			
+			document.querySelector("#reload").addEventListener("click", function() {
+				refreshPlot();	
+			});
+			
+			refreshPlot();
+			
+			
+		});
+	</script>
+</body>
+</html>
