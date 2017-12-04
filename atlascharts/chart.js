@@ -56,9 +56,9 @@ define(["d3", "d3-selection", "d3-scale"],
 	  createSvg(target, width, height) {
 
 	  	// if tip already exists on this chart, it should be destroyed
-      if (this.tip) {
-        this.tip.destroy();
-      }
+	    if (this.tip) {
+	      this.tip.destroy();
+	    }
 
 	    const container = d3selection.select(target);
 	    container.select('svg').remove();
