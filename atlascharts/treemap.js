@@ -43,7 +43,12 @@ define(["d3", "d3-tip", "./chart"],
 	    d3.select(target).select('.treemap_zoomtarget').text('');
 	    let currentDepth = 0;
 
-	    const tip = d3tip()
+
+      if (this.tip) {
+        this.tip.destroy();
+      }
+
+      this.tip = d3tip()
 	      .attr('class', 'd3-tip')
 	      .direction(function(d) {
 	        const scaledWidth = x.domain()[1] === 1 ? w : x.domain()[1];
@@ -203,9 +208,9 @@ define(["d3", "d3-tip", "./chart"],
 	      .style('fill', function(d) {
 	      	return color(options.getcolorvalue(d.data));
 	      })
-	      .on('click', function(d) {
+	      .on('click', (d) => {
 	        if (options.useTip) {
-	          tip.hide();
+	          this.tip.hide();
 	        }
 	        if (event.altKey) {
 	          zoom(hierarchy);
@@ -231,14 +236,10 @@ define(["d3", "d3-tip", "./chart"],
 	      });
 
 	    if (options.useTip) {
-	      svg.call(tip);
-	      cell
-	        .on('mouseover', function(d) {
-	        	return tip.show(d, event.target);
-	        })
-	        .on('mouseout', function(d) {
-	        	return tip.hide(d, event.target);
-	      });
+        svg.call(this.tip);
+        cell
+          .on('mouseover', d => this.tip.show(d, event.target))
+          .on('mouseleave', d => this.tip.hide(d, event.target))
 	    } else {
 	      cell
 	        .attr('data-container', 'body')
@@ -318,7 +319,7 @@ define(["d3", "d3-tip", "./chart"],
 	    return root;
 	  }
 	}
-		
+
 	return Treemap;
-	
+
 });
