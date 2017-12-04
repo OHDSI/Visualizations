@@ -18,8 +18,8 @@ Authors: Frank Defalco, Christopher Knoll, Pavel Grafkin, Alexander Saltykov
 
 */
 
-define(["d3", "d3-tip", "./chart"],
-	function(d3, d3tip, Chart) {
+define(["d3", "./chart"],
+	function(d3, Chart) {
 	"use strict";
 
 	class Treemap extends Chart {
@@ -42,22 +42,6 @@ define(["d3", "d3-tip", "./chart"],
 
 	    d3.select(target).select('.treemap_zoomtarget').text('');
 	    let currentDepth = 0;
-
-	    this.tip = d3tip()
-	      .attr('class', 'd3-tip')
-	      .direction(function(d) {
-	        const scaledWidth = x.domain()[1] === 1 ? w : x.domain()[1];
-	        if (d.x1 >= scaledWidth - scaledWidth / 10) {
-	          return 'w';
-	        } else if (d.x0 <= scaledWidth / 10) {
-	          return 'e';
-	        }
-	        return 'n';
-	      })
-	      .offset([3, 0])
-	      .html(function (d) {
-	      	return `${options.gettitle(d.data)}<br/><br/>${options.getcontent(d.data)}`
-	      });
 
 	    const treemap = d3.treemap()
 	      .round(false)
@@ -231,7 +215,22 @@ define(["d3", "d3-tip", "./chart"],
 	      });
 
 	    if (options.useTip) {
-	      svg.call(this.tip);
+	      this.useTip(tip => {
+					tip.attr('class', 'd3-tip')
+						.direction(function(d) {
+							const scaledWidth = x.domain()[1] === 1 ? w : x.domain()[1];
+							if (d.x1 >= scaledWidth - scaledWidth / 10) {
+								return 'w';
+							} else if (d.x0 <= scaledWidth / 10) {
+								return 'e';
+							}
+							return 'n';
+						})
+						.offset([3, 0])
+						.html(function (d) {
+							return `${options.gettitle(d.data)}<br/><br/>${options.getcontent(d.data)}`
+						});
+				});
 	      cell
 	        .on('mouseover', (d) => this.tip.show(d, event.target))
 	        .on('mouseout', (d) => this.tip.hide(d, event.target))

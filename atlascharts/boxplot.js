@@ -18,8 +18,8 @@ Authors: Christopher Knoll, Mark Valez, Sigfried Gold, Alexander Saltykov
 
 */
 
-define(["d3", "d3-tip", "d3-scale", "./chart"],
-	function(d3, d3tip, d3scale, Chart) {
+define(["d3", "d3-scale", "./chart"],
+	function(d3, d3scale, Chart) {
 	"use strict";
 
 	class Boxplot extends Chart {
@@ -31,11 +31,11 @@ define(["d3", "d3-tip", "d3-scale", "./chart"],
 
 	    const valueFormatter = this.formatters.formatSI(3);
 
-	    const tip = d3tip()
-	      .attr('class', 'd3-tip')
-	      .offset([-10, 0])
-	      .html(d =>
-	        `<table class='boxplotValues'>
+	    this.useTip(tip => {
+	    	tip.attr('class', 'd3-tip')
+					.offset([-10, 0])
+					.html(d =>
+						`<table class='boxplotValues'>
 	          <tr>
 	            <td>Max:</td>
 	            <td>${valueFormatter(d.max)}</td>
@@ -65,8 +65,8 @@ define(["d3", "d3-tip", "d3-scale", "./chart"],
 	            <td>${valueFormatter(d.min)}</td>
 	          </tr>
 	        </table>`
-	      )
-	    svg.call(tip);
+					);
+			});
 
 	    // apply labels (if specified) and offset margins accordingly
 	    let xAxisLabelHeight = 0;
@@ -168,8 +168,10 @@ define(["d3", "d3-tip", "d3-scale", "./chart"],
 	      .attr('class', 'boxplot')
 	      .attr('transform', d => `translate(${x(d.Category)}, 0)`);
 
+	    const currentObject = this;
+
 	    // for each g element (containing the boxplot render surface), draw the whiskers, bars and rects
-	    boxplots.each(function (d, i) {
+	    boxplots.each(function (d) {
 	      const boxplot = d3.select(this);
 	      if (d.LIF != d.q1) { // draw whisker
 	        boxplot.append('line')
@@ -192,8 +194,8 @@ define(["d3", "d3-tip", "d3-scale", "./chart"],
 	        .attr('y', y(d.q3))
 	        .attr('width', boxWidth)
 	        .attr('height', Math.max(1, y(d.q1) - y(d.q3)))
-	        .on('mouseover', d => tip.show(d, event.target))
-	        .on('mouseout', tip.hide);
+	        .on('mouseover', d => currentObject.tip.show(d, event.target))
+	        .on('mouseout', d => currentObject.tip.hide(d, event.target));
 
 	      boxplot.append('line')
 	        .attr('class', 'median')

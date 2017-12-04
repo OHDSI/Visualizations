@@ -18,8 +18,8 @@ Authors: Christopher Knoll, Mark Valez, Sigfried Gold, Alexander Saltykov
 
 */
 
-define(['d3', 'd3-tip', './chart'],
-	function(d3, d3tip, Chart) {
+define(['d3', './chart'],
+	function(d3, Chart) {
 	'use strict';
 
 	class Scatterplot extends Chart {
@@ -68,11 +68,11 @@ define(['d3', 'd3-tip', './chart'],
 						}];
 				}
 					
-		    const tip = d3tip()
-		      .attr('class', 'd3-tip')
-		      .offset([-10, 0])
-		      .html(options.tooltip)
-		    svg.call(tip);
+				this.useTip(tip => {
+					tip.attr('class', 'd3-tip')
+						.offset([-10, 0])
+						.html(options.tooltip);
+				});
 
 				let xAxisLabelHeight = 0;
 				let yAxisLabelWidth = 0;
@@ -276,13 +276,13 @@ define(['d3', 'd3-tip', './chart'],
 						}
 						return 'translate(' + xVal + ',' + yVal + ')';
 					})
-					.on('mouseover', function (d) {
+					.on('mouseover', (d) => {
 						d3.select(this).style('opacity', '1');
-						tip.show(d, event.target);
+						this.tip.show(d, event.target);
 					})
-					.on('mouseout', function (d) {
+					.on('mouseout', (d) => {
 						d3.select(this).style('opacity', '0');
-						tip.hide(d, event.target);
+						this.tip.hide(d, event.target);
 					});
 
 				if (options.showXAxis) {
