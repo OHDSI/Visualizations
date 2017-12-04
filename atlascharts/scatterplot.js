@@ -259,6 +259,7 @@ define(['d3', './chart'],
 					x: 0,
 					y: 0
 				};
+				const currentObject = this;
 				series.selectAll('.focus')
 					.data(function (series) {
 						return series.values.map(value => Object.assign({}, value, { seriesName: series.name }));
@@ -276,13 +277,13 @@ define(['d3', './chart'],
 						}
 						return 'translate(' + xVal + ',' + yVal + ')';
 					})
-					.on('mouseover', (d) => {
+					.on('mouseover', function (d) {
 						d3.select(this).style('opacity', '1');
-						this.tip.show(d, event.target);
+						currentObject.tip.show(d, event.target);
 					})
-					.on('mouseout', (d) => {
+					.on('mouseout', function (d) {
 						d3.select(this).style('opacity', '0');
-						this.tip.hide(d, event.target);
+						currentObject.tip.hide(d, event.target);
 					});
 
 				if (options.showXAxis) {
