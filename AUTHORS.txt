@@ -4,3 +4,4 @@ Christopher Knoll <cknoll@ohdsi.org>
 Mark Valez
 Anthony Sena
 Sigfried Gold
+Alexander Saltykov <a_salt@live.ru>

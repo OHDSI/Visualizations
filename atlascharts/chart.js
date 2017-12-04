@@ -63,6 +63,8 @@ define(["d3", "d3-selection", "d3-scale"],
 	        0
 	        ${width}
 	        ${height}`)
+	      .attr('width', width)
+	      .attr('height', height)
 	      .append('g')
 	      .attr('class', 'chart');
 

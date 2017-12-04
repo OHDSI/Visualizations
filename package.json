@@ -1,12 +1,13 @@
 {
   "name": "@ohdsi/atlascharts",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Visualizations is a collection of JavaScript modules to support D3 visualizations in web-based applications",
-  "main": "dist/atlascharts.min.js",
+  "main": "dist/atlascharts.umd.js",
   "scripts": {
-    "build:min": "google-closure-compiler-js dist/atlascharts.js > dist/atlascharts.min.js",
-    "build:dev": "node node_modules/requirejs/bin/r.js -o build/build-dev.js",
-    "build": "npm run build:dev && npm run build:min",
+    "build:amd:min": "google-closure-compiler-js dist/atlascharts.js > dist/atlascharts.min.js",
+    "build:amd:dev": "node node_modules/requirejs/bin/r.js -o build/build-dev.js",
+    "build:umd": "webpack",
+    "build": "npm run build:amd:dev && npm run build:amd:min && npm run build:umd",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -30,8 +31,12 @@
   },
   "homepage": "https://github.com/OHDSI/Visualizations#readme",
   "dependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-latest": "^6.24.1",
     "d3-tip": "^0.7.1",
     "google-closure-compiler-js": "^20170626.0.0",
-    "requirejs": "^2.3.4"
+    "requirejs": "^2.3.4",
+    "webpack": "^3.6.0"
   }
 }
