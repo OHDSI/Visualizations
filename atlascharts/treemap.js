@@ -43,11 +43,6 @@ define(["d3", "d3-tip", "./chart"],
 	    d3.select(target).select('.treemap_zoomtarget').text('');
 	    let currentDepth = 0;
 
-
-	    if (this.tip) {
-	    	this.tip.destroy();
-	    }
-
 	    this.tip = d3tip()
 	      .attr('class', 'd3-tip')
 	      .direction(function(d) {
