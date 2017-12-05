@@ -18,8 +18,8 @@ Authors: Christopher Knoll
 
 */
 
-define(["d3", "d3-tip", "d3-scale", "d3-shape", "./chart", "get"],
-	function(d3, d3tip, d3scale, d3shape, Chart, get) {
+define(["d3", "d3-scale", "d3-shape", "./chart", "get"],
+	function(d3, d3scale, d3shape, Chart, get) {
 	"use strict";
 
 	class Trellisline extends Chart {

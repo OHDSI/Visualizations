@@ -18,8 +18,8 @@ Author: Alexander Saltykov
 
 */
 
-define(["d3", "d3-selection", "d3-scale"],
-	function(d3, d3selection, d3scale) {
+define(["d3", "d3-tip", "d3-selection", "d3-scale"],
+	function(d3, d3tip, d3selection, d3scale) {
 	"use strict";
 	
 	class Chart {
@@ -54,6 +54,9 @@ define(["d3", "d3-selection", "d3-scale"],
 	  }
 
 	  createSvg(target, width, height) {
+
+	    this.destroyTipIfExists();
+
 	    const container = d3selection.select(target);
 	    container.select('svg').remove();
 	    const chart = container.append('svg')
@@ -68,8 +71,33 @@ define(["d3", "d3-selection", "d3-scale"],
 	      .append('g')
 	      .attr('class', 'chart');
 
+			this.chart = chart;
+
 	    return chart;
 	  }
+
+	  useTip(tooltipConfigurer = () => {}) {
+
+	    this.destroyTipIfExists();
+
+	    this.tip = d3tip()
+	      .attr('class', 'd3-tip');
+
+	    tooltipConfigurer(this.tip);
+
+	    if (this.chart) {
+	      this.chart.call(this.tip);
+	    }
+
+	    return this.tip;
+	  }
+
+	  destroyTipIfExists() {
+	    if (this.tip) {
+	      this.tip.destroy();
+	    }
+	  }
+
 
 	  static normalizeDataframe(dataframe) {
 	    // rjson serializes dataframes with 1 row as single element properties.

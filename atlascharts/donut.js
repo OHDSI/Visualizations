@@ -18,8 +18,8 @@ Authors: Christopher Knoll, Mark Valez, Sigfried Gold, Alexander Saltykov
 
 */
 
-define(["d3", "d3-tip", "d3-shape", "d3-drag", "numeral", "./chart"],
-	function(d3, d3tip, d3shape, d3drag, numeral, Chart) {
+define(["d3", "d3-shape", "d3-drag", "numeral", "./chart"],
+	function(d3, d3shape, d3drag, numeral, Chart) {
 	"use strict";
 
 	class Donut extends Chart {
@@ -74,12 +74,11 @@ define(["d3", "d3-tip", "d3-shape", "d3-drag", "numeral", "./chart"],
 	      (d) => this.formatters.formatpercent(total != 0 ? d.value / total : 0.0)
 	    );    
 
-	    const tip = d3tip()
-	      .attr('class', 'd3-tip')
+	    this.useTip(tip =>
+	      tip.attr('class', 'd3-tip')
 	      .direction('s')
 	      .offset([3, 0])
-	      .html(tooltipBuilder);
-	    svg.call(tip);
+	      .html(tooltipBuilder));
 
 	    if (data.length > 0) {
 	      const vis = svg
@@ -171,8 +170,8 @@ define(["d3", "d3-tip", "d3-shape", "d3-drag", "numeral", "./chart"],
 	        .attr('stroke', '#fff')
 	        .attr('stroke-width', 5)
 	        .attr('title', d => d.label)
-	        .on('mouseover', d => tip.show(d.data, event.target))
-	        .on('mouseout', tip.hide)
+	        .on('mouseover', d => this.tip.show(d.data, event.target))
+	        .on('mouseout', d => this.tip.hide(d.data, event.target))
 	        .attr('d', arc); // this creates the actual SVG path using the associated data (pie) with the arc drawing function
 
 	      

@@ -17,8 +17,8 @@ limitations under the License.
 Authors: Christopher Knoll, Mark Valez, Sigfried Gold, Alexander Saltykov
 
 */
-define(["d3", "d3-tip", "d3-shape", "d3-scale", "./chart"],
-	function(d3, d3tip, d3shape, d3scale, Chart) {
+define(["d3", "d3-shape", "d3-scale", "./chart"],
+	function(d3, d3shape, d3scale, Chart) {
 	"use strict";
 
 	class Line extends Chart {
@@ -76,11 +76,11 @@ define(["d3", "d3-tip", "d3-shape", "d3-scale", "./chart"],
 	        ];
 	      };
 
-	      const tip = d3tip()
-	        .attr('class', 'd3-tip')
-	        .offset([-10, 0])
-	        .html(tooltipBuilder);
-	      svg.call(tip);
+	      this.useTip((tip) => {
+	        tip.attr('class', 'd3-tip')
+	          .offset([-10, 0])
+	          .html(tooltipBuilder);
+	      });
 
 	      let xAxisLabelHeight = 0;
 	      let yAxisLabelWidth = 0;
@@ -275,6 +275,7 @@ define(["d3", "d3-tip", "d3-shape", "d3-scale", "./chart"],
 	        x: 0,
 	        y: 0
 	      };
+	      const self = this;
 	      series.selectAll('.focus')
 	        .data(series => series.values)
 	        .enter()
@@ -292,11 +293,11 @@ define(["d3", "d3-tip", "d3-shape", "d3-scale", "./chart"],
 	        })
 	        .on('mouseover', function (d) {
 	          d3.select(this).style('opacity', '1');
-	          tip.show(d, event.target);
+	          self.tip.show(d, event.target);
 	        })
 	        .on('mouseout', function (d) {
 	          d3.select(this).style('opacity', '0');
-	          tip.hide(d, event.target);
+	          self.tip.hide(d, event.target);
 	        });
 
 	      vis.append('g')

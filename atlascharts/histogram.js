@@ -18,8 +18,8 @@ Authors: Christopher Knoll, Alexander Saltykov
 
 */
 
-define(["d3", "d3-tip", "d3-scale", "numeral", "./chart"],
-	function(d3, d3tip, d3scale, numeral, Chart) {
+define(["d3", "d3-scale", "numeral", "./chart"],
+	function(d3, d3scale, numeral, Chart) {
 	"use strict";
 
 	class Histogram extends Chart {
@@ -107,11 +107,11 @@ define(["d3", "d3-tip", "d3-scale", "numeral", "./chart"],
 	    this.xScale = {}; // shared xScale for histogram and boxplot
 	    const data = chartData || []; // default to empty set if null is passed in
 
-	    const tip = d3tip()
-	      .attr('class', 'd3-tip')
-	      .offset([-10, 0])
-	      .html(d => numeral(d.y).format('0,0'));
-	    svg.call(tip);
+	    this.useTip((tip) => {
+	      tip.attr('class', 'd3-tip')
+	        .offset([-10, 0])
+	        .html(d => numeral(d.y).format('0,0'));
+	    });
 
 	    let xAxisLabelHeight = 0;
 	    let yAxisLabelWidth = 0;
@@ -228,8 +228,8 @@ define(["d3", "d3-tip", "d3-scale", "numeral", "./chart"],
 	      .enter().append('g')
 	      .attr('class', 'bar')
 	      .attr('transform', d => `translate(${x(d.x)}, ${y(d.y)})`)
-	      .on('mouseover', d => tip.show(d, event.target))
-	      .on('mouseout', tip.hide);
+	      .on('mouseover', d => this.tip.show(d, event.target))
+	      .on('mouseout', d => this.tip.hide(d, event.target));
 
 	    bar.append('rect')
 	      .attr('x', 1)

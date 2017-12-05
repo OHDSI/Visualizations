@@ -18,8 +18,8 @@ Authors: Christopher Knoll
 
 */
 
-define(["d3", "d3-tip", "d3-scale", "./chart"],
-	function(d3, d3tip, d3scale, Chart) {
+define(["d3", "d3-scale", "./chart"],
+	function(d3, d3scale, Chart) {
 	"use strict";
 
 	class BarChart extends Chart {
@@ -43,12 +43,12 @@ define(["d3", "d3-tip", "d3-scale", "./chart"],
 	    // conatainer
 	    let svg = this.createSvg(target, w, h);
 
-	    var tip = d3tip()
-	      .attr('class', 'd3-tip')
+	    this.useTip((tip) => {
+	      tip.attr('class', 'd3-tip')
 	      .offset([-10, 0])
-	      .html(d => d.value)
-	    svg.call(tip);
-			
+	      .html(d => d.value);
+	    });
+
 	    const label = options.label;
 	    const value = options.value;
 
@@ -149,8 +149,8 @@ define(["d3", "d3-tip", "d3-scale", "./chart"],
 	        return temp_title;
 	      })
 	      .style('fill', d => options.colors(d[label]))
-	      .on('mouseover', d => tip.show(d, event.target))
-	      .on('mouseout', tip.hide)
+	      .on('mouseover', d => this.tip.show(d, event.target))
+	      .on('mouseout', d => this.tip.hide(d, event.target))
 	      .exit()
 	      .remove();
 
