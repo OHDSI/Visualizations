@@ -18,8 +18,8 @@ Authors: Christopher Knoll, Mark Valez, Sigfried Gold, Alexander Saltykov
 
 */
 
-define(['d3', 'd3-tip', './chart'],
-	function(d3, d3tip, Chart) {
+define(['d3', './chart'],
+	function(d3, Chart) {
 	'use strict';
 
 	class Scatterplot extends Chart {
@@ -68,11 +68,11 @@ define(['d3', 'd3-tip', './chart'],
 						}];
 				}
 					
-		    const tip = d3tip()
-		      .attr('class', 'd3-tip')
-		      .offset([-10, 0])
-		      .html(options.tooltip)
-		    svg.call(tip);
+	      this.useTip((tip) => {
+	        tip.attr('class', 'd3-tip')
+	          .offset([-10, 0])
+	          .html(options.tooltip);
+	      });
 
 				let xAxisLabelHeight = 0;
 				let yAxisLabelWidth = 0;
@@ -259,6 +259,7 @@ define(['d3', 'd3-tip', './chart'],
 					x: 0,
 					y: 0
 				};
+				const currentObject = this;
 				series.selectAll('.focus')
 					.data(function (series) {
 						return series.values.map(value => Object.assign({}, value, { seriesName: series.name }));
@@ -278,11 +279,11 @@ define(['d3', 'd3-tip', './chart'],
 					})
 					.on('mouseover', function (d) {
 						d3.select(this).style('opacity', '1');
-						tip.show(d, event.target);
+						currentObject.tip.show(d, event.target);
 					})
 					.on('mouseout', function (d) {
 						d3.select(this).style('opacity', '0');
-						tip.hide(d, event.target);
+						currentObject.tip.hide(d, event.target);
 					});
 
 				if (options.showXAxis) {
