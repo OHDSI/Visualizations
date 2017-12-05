@@ -68,11 +68,11 @@ define(['d3', './chart'],
 						}];
 				}
 					
-				this.useTip((tip) => {
-					tip.attr('class', 'd3-tip')
-						.offset([-10, 0])
-						.html(options.tooltip);
-				});
+	      this.useTip((tip) => {
+	        tip.attr('class', 'd3-tip')
+	          .offset([-10, 0])
+	          .html(options.tooltip);
+	      });
 
 				let xAxisLabelHeight = 0;
 				let yAxisLabelWidth = 0;

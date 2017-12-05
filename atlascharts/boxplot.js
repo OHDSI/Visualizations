@@ -32,10 +32,10 @@ define(["d3", "d3-scale", "./chart"],
 	    const valueFormatter = this.formatters.formatSI(3);
 
 	    this.useTip((tip) => {
-	    	tip.attr('class', 'd3-tip')
-					.offset([-10, 0])
-					.html(d =>
-						`<table class='boxplotValues'>
+	      tip.attr('class', 'd3-tip')
+	      .offset([-10, 0])
+	      .html(d =>
+	        `<table class='boxplotValues'>
 	          <tr>
 	            <td>Max:</td>
 	            <td>${valueFormatter(d.max)}</td>
@@ -65,8 +65,8 @@ define(["d3", "d3-scale", "./chart"],
 	            <td>${valueFormatter(d.min)}</td>
 	          </tr>
 	        </table>`
-					);
-			});
+	      );
+	    });
 
 	    // apply labels (if specified) and offset margins accordingly
 	    let xAxisLabelHeight = 0;

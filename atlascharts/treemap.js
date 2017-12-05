@@ -216,21 +216,21 @@ define(["d3", "./chart"],
 
 	    if (options.useTip) {
 	      this.useTip((tip) => {
-					tip.attr('class', 'd3-tip')
-						.direction(function(d) {
-							const scaledWidth = x.domain()[1] === 1 ? w : x.domain()[1];
-							if (d.x1 >= scaledWidth - scaledWidth / 10) {
-								return 'w';
-							} else if (d.x0 <= scaledWidth / 10) {
-								return 'e';
-							}
-							return 'n';
-						})
-						.offset([3, 0])
-						.html(function (d) {
-							return `${options.gettitle(d.data)}<br/><br/>${options.getcontent(d.data)}`
-						});
-				});
+	        tip.attr('class', 'd3-tip')
+	          .direction(function(d) {
+	            const scaledWidth = x.domain()[1] === 1 ? w : x.domain()[1];
+	            if (d.x1 >= scaledWidth - scaledWidth / 10) {
+	              return 'w';
+	            } else if (d.x0 <= scaledWidth / 10) {
+	              return 'e';
+	            }
+	            return 'n';
+	          })
+	          .offset([3, 0])
+	          .html(function (d) {
+	            return `${options.gettitle(d.data)}<br/><br/>${options.getcontent(d.data)}`
+	          });
+	      });
 	      cell
 	        .on('mouseover', (d) => this.tip.show(d, event.target))
 	        .on('mouseout', (d) => this.tip.hide(d, event.target))

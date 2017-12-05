@@ -76,27 +76,27 @@ define(["d3", "d3-tip", "d3-selection", "d3-scale"],
 	    return chart;
 	  }
 
-		useTip(tooltipConfigurer = () => {}) {
+	  useTip(tooltipConfigurer = () => {}) {
 
-			this.destroyTipIfExists();
+	    this.destroyTipIfExists();
 
-			this.tip = d3tip()
-				.attr('class', 'd3-tip');
+	    this.tip = d3tip()
+	      .attr('class', 'd3-tip');
 
-			tooltipConfigurer(this.tip);
+	    tooltipConfigurer(this.tip);
 
-	  	if (this.chart) {
-				this.chart.call(this.tip);
-			}
+	    if (this.chart) {
+	      this.chart.call(this.tip);
+	    }
 
-			return this.tip;
-		}
+	    return this.tip;
+	  }
 
-		destroyTipIfExists() {
-			if (this.tip) {
-				this.tip.destroy();
-			}
-		}
+	  destroyTipIfExists() {
+	    if (this.tip) {
+	      this.tip.destroy();
+	    }
+	  }
 
 
 	  static normalizeDataframe(dataframe) {
