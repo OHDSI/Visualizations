@@ -47,7 +47,7 @@ define(["d3", "d3-scale", "./chart"],
 	      tip.attr('class', 'd3-tip')
 	      .offset([-10, 0])
 	      .html(d => d.value);
-			});
+	    });
 
 	    const label = options.label;
 	    const value = options.value;
