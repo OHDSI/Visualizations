@@ -68,7 +68,7 @@ define(['d3', './chart'],
 						}];
 				}
 					
-				this.useTip(tip => {
+				this.useTip((tip) => {
 					tip.attr('class', 'd3-tip')
 						.offset([-10, 0])
 						.html(options.tooltip);

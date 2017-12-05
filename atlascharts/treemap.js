@@ -215,7 +215,7 @@ define(["d3", "./chart"],
 	      });
 
 	    if (options.useTip) {
-	      this.useTip(tip => {
+	      this.useTip((tip) => {
 					tip.attr('class', 'd3-tip')
 						.direction(function(d) {
 							const scaledWidth = x.domain()[1] === 1 ? w : x.domain()[1];

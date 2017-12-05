@@ -76,7 +76,7 @@ define(["d3", "d3-shape", "d3-scale", "./chart"],
 	        ];
 	      };
 
-	      this.useTip(tip => {
+	      this.useTip((tip) => {
 	      	tip.attr('class', 'd3-tip')
 						.offset([-10, 0])
 						.html(tooltipBuilder);
@@ -275,7 +275,7 @@ define(["d3", "d3-shape", "d3-scale", "./chart"],
 	        x: 0,
 	        y: 0
 	      };
-	      const currentObject = this;
+	      const self = this;
 	      series.selectAll('.focus')
 	        .data(series => series.values)
 	        .enter()
@@ -293,11 +293,11 @@ define(["d3", "d3-shape", "d3-scale", "./chart"],
 	        })
 	        .on('mouseover', function (d) {
 	          d3.select(this).style('opacity', '1');
-	          currentObject.tip.show(d, event.target);
+	          self.tip.show(d, event.target);
 	        })
 	        .on('mouseout', function (d) {
 	          d3.select(this).style('opacity', '0');
-	          currentObject.tip.hide(d, event.target);
+	          self.tip.hide(d, event.target);
 	        });
 
 	      vis.append('g')

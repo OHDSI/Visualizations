@@ -107,7 +107,7 @@ define(["d3", "d3-scale", "numeral", "./chart"],
 	    this.xScale = {}; // shared xScale for histogram and boxplot
 	    const data = chartData || []; // default to empty set if null is passed in
 
-			this.useTip(tip => {
+			this.useTip((tip) => {
 				tip.attr('class', 'd3-tip')
 					.offset([-10, 0])
 					.html(d => numeral(d.y).format('0,0'));

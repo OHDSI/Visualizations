@@ -43,10 +43,10 @@ define(["d3", "d3-scale", "./chart"],
 	    // conatainer
 	    let svg = this.createSvg(target, w, h);
 
-	    this.useTip(tip => {
-	    	tip.attr('class', 'd3-tip')
-					.offset([-10, 0])
-					.html(d => d.value);
+	    this.useTip((tip) => {
+	      tip.attr('class', 'd3-tip')
+	      .offset([-10, 0])
+	      .html(d => d.value);
 			});
 
 	    const label = options.label;

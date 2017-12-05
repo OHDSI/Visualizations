@@ -31,7 +31,7 @@ define(["d3", "d3-scale", "./chart"],
 
 	    const valueFormatter = this.formatters.formatSI(3);
 
-	    this.useTip(tip => {
+	    this.useTip((tip) => {
 	    	tip.attr('class', 'd3-tip')
 					.offset([-10, 0])
 					.html(d =>
@@ -168,7 +168,7 @@ define(["d3", "d3-scale", "./chart"],
 	      .attr('class', 'boxplot')
 	      .attr('transform', d => `translate(${x(d.Category)}, 0)`);
 
-	    const currentObject = this;
+	    const self = this;
 
 	    // for each g element (containing the boxplot render surface), draw the whiskers, bars and rects
 	    boxplots.each(function (d) {
@@ -194,8 +194,8 @@ define(["d3", "d3-scale", "./chart"],
 	        .attr('y', y(d.q3))
 	        .attr('width', boxWidth)
 	        .attr('height', Math.max(1, y(d.q1) - y(d.q3)))
-	        .on('mouseover', d => currentObject.tip.show(d, event.target))
-	        .on('mouseout', d => currentObject.tip.hide(d, event.target));
+	        .on('mouseover', d => self.tip.show(d, event.target))
+	        .on('mouseout', d => self.tip.hide(d, event.target));
 
 	      boxplot.append('line')
 	        .attr('class', 'median')
