@@ -55,7 +55,7 @@ define(["d3", "d3-tip", "d3-selection", "d3-scale"],
 
 	  createSvg(target, width, height) {
 
-			this.destroyTipIfExists();
+	    this.destroyTipIfExists();
 
 	    const container = d3selection.select(target);
 	    container.select('svg').remove();
