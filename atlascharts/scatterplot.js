@@ -34,6 +34,7 @@ define(['d3', './chart'],
 				yValue: 'yValue',
 				cssClass: 'lineplot',
 				ticks: 10,
+				yTicks: 4,
 				showSeriesLabel: false,
 				labelIndexDate: false,
 				colorBasedOnIndex: false,
@@ -179,7 +180,7 @@ define(['d3', './chart'],
 				const yAxis = d3.axisLeft()
 					.scale(y)
 					.tickFormat(options.yFormat)
-					.ticks(4);
+					.ticks(options.yTicks);
 
 				// create temporary x axis
 				const tempXAxis = svg.append('g').attr('class', 'axis');

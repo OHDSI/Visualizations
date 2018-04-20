@@ -88,6 +88,7 @@ define(["d3", "d3-shape", "d3-scale", "./chart"],
 	      yValue: 'yValue',
 	      cssClass: 'lineplot',
 	      ticks: 10,
+	      yTicks: 4,
 	      showSeriesLabel: false,
 	      labelIndexDate: false,
 	      colorBasedOnIndex: false,
@@ -219,7 +220,7 @@ define(["d3", "d3-shape", "d3-scale", "./chart"],
 	      const yAxis = d3.axisLeft()
 	        .scale(y)
 	        .tickFormat(options.yFormat)
-	        .ticks(4);
+	        .ticks(options.yTicks);
 
 	      const tempXAxis = svg.append('g').attr('class', 'axis');
 	      tempXAxis.call(xAxis);
@@ -390,7 +391,8 @@ define(["d3", "d3-shape", "d3-scale", "./chart"],
         .attr("r", 2)
         .style("fill", color);
 
-      const rect = svg.append("rect");
+      const rect = svg.append("rect")
+				.style("opacity", 0);
       const bisector = d3.bisector(function(d) {
         return d.xValue;
       }).left;

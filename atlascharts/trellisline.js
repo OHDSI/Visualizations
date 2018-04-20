@@ -27,6 +27,7 @@ define(["d3", "d3-scale", "d3-shape", "./chart", "get"],
 	    // options
 	    const defaults = {
 	      trellisSet: d3.keys(dataByTrellis),
+	      yTicks: 4,
 	      xFormat: d3.format('d'),
 	      yFormat: d3.format('d'),
 	      interpolate: d3.curveLinear,
@@ -237,7 +238,7 @@ define(["d3", "d3-scale", "d3-shape", "./chart", "get"],
 	    const yAxis = d3.axisLeft()
 	      .scale(yScale)
 	      .tickFormat(options.yFormat)
-	      .ticks(4);
+	      .ticks(options.yTicks);
 
 	    // create temporary x axis
 	    const xAxis = d3.axisBottom()

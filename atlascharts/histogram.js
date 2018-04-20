@@ -97,6 +97,7 @@ define(["d3", "d3-scale", "numeral", "./chart"],
 	    // options
 	    const defaults = {
 	      ticks: 10,
+	      yTicks: 4,
 	      yScale: d3scale.scaleLinear(),
 	      boxplotHeight: 10,
 	    };
@@ -176,7 +177,7 @@ define(["d3", "d3-scale", "numeral", "./chart"],
 
 	    const yAxis = d3.axisLeft()
 	      .scale(y)
-	      .ticks(4)
+	      .ticks(options.yTicks)
 	      .tickFormat(options.yFormat);
 
 	    // create temporary x axis
