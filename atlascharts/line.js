@@ -300,7 +300,7 @@ define(["d3", "d3-shape", "d3-scale", "./chart"],
 	          self.tip.hide(d, event.target);
 	        });
 
-	      vis.append('g')
+        vis.append('g')
 	        .attr('class', 'x axis')
 	        .attr('transform', `translate(0, ${height})`)
 	        .call(xAxis);
@@ -317,13 +317,80 @@ define(["d3", "d3-shape", "d3-scale", "./chart"],
 	          .attr('height', height);
 	      }
 
+	      data.forEach(lineData => {
+	      	this.appendTracker({
+            svg,
+            vis,
+            data: lineData.values,
+            width,
+            height,
+            marginLeft: options.margins.left + yAxisLabelWidth + yAxisWidth,
+            marginTop: options.margins.top,
+            x,
+            y,
+            color: options.colors(lineData.name),
+					});
+	      });
+
 	    } else {
 	      svg.append('text')
 	        .attr('transform', `translate(${w / 2}, ${h / 2})`)
 	        .style('text-anchor', 'middle')
 	        .text('No Data');
 	    }
+
 	  }
+	  
+	  appendTracker({ svg, vis, data, width, height, marginLeft, marginTop, x, y, color }) {
+      const xLineClass = "x-hover-line";
+	  	
+      const tracker = vis.append("g")
+        .attr("class", "current-focus")
+        .style("display", "none");
+
+      tracker.append("line")
+        .attr("class", xLineClass)
+        .style("stroke", color)
+        .style("stroke-width", "2px")
+        .style("stroke-dasharray", "3,3")
+        .attr("y1", 0)
+        .attr("y2", height);
+
+      tracker.append("circle")
+        .attr("r", 2)
+        .style("fill", color);
+
+      const rect = svg.append("rect");
+      const bisector = d3.bisector(function(d) {
+        return d.xValue;
+      }).left;
+
+      rect
+        .attr("transform", `translate(${marginLeft}, ${marginTop})`)
+        .attr("class", "overlay")
+        .attr("width", width)
+        .attr("height", height)
+        .attr('pointer-events', 'all')
+        .on("mouseover", () => tracker.style("display", null))
+        .on("mouseout", () => {
+          tracker.style("display", "none");
+          this.tip.hide({}, tracker.node());
+        });
+
+      rect.node().addEventListener("mousemove", (e) => {
+        const offsetX = e.offsetX - marginLeft;
+        const x0 = x.invert(offsetX),
+          i = bisector(data, x0, 1),
+          d0 = data[i - 1],
+          d1 = data[i],
+          d = x0 - d0.xValue > d1.xValue - x0 ? d1 : d0;
+
+        tracker.attr("transform", "translate(" + x(d.xValue) + "," + y(d.yValue) + ")");
+        tracker.select(`.${xLineClass}`).attr("y2", height - y(d.yValue));
+        this.tip.show(d, tracker.node());
+      })
+		}
+
 	}
 	
 	return Line;
