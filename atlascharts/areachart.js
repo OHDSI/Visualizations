@@ -30,8 +30,9 @@ define(["d3"], function(d3) {
 					bottom: 20,
 					left: 40
 				},
+				yTicks: 4,
 				xFormat: d3.format(',.0f'),
-				yFormat: d3.format('s')
+				yFormat: d3.format('s'),
 			};
 			options = Object.assign({}, defaults, options);
 
@@ -59,7 +60,7 @@ define(["d3"], function(d3) {
 			var yAxis = d3.svg.axis()
 				.scale(y)
 				.tickFormat(options.yFormat)
-				.ticks(4)
+				.ticks(options.yTicks)
 				.orient("left");
 
 			var area = d3.svg.area()
