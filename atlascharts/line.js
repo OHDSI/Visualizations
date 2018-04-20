@@ -48,21 +48,24 @@ define(["d3", "d3-shape", "d3-scale", "./chart"],
 	      ticks: 10,
 	      showSeriesLabel: false,
 	      labelIndexDate: false,
-	      colorBasedOnIndex: false
-	    };
-	    const options = this.getOptions(defaults, chartOptions);
-	    // container
-	    const svg = this.createSvg(target, w, h);
+	      colorBasedOnIndex: false,
+        getTooltipBuilder: null,
+      };
+      const options = this.getOptions(defaults, chartOptions);
+      // container
+      const svg = this.createSvg(target, w, h);
 
-	    const tooltipBuilder = this.lineDefaultTooltip(
-	      options.xLabel || 'x',
-	      options.xFormat,
-	      d => d[options.xValue],
-	      options.yLabel || 'y',
-	      options.yFormat,
-	      d => d[options.yValue],
-	      d => d[options.seriesName]
-	    );
+      const tooltipBuilder = typeof options.getTooltipBuilder === 'function'
+				? options.getTooltipBuilder(options)
+				: this.lineDefaultTooltip(
+						options.xLabel || 'x',
+						options.xFormat,
+						d => d[options.xValue],
+						options.yLabel || 'y',
+						options.yFormat,
+						d => d[options.yValue],
+						d => d[options.seriesName]
+					);
 
 	    if (data.length > 0) {
 	      // convert data to multi-series format if not already formatted
