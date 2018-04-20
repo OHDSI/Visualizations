@@ -19,7 +19,7 @@ Authors: Christopher Knoll, Mark Valez, Sigfried Gold, Alexander Saltykov
 */
 define(["d3", "d3-shape", "d3-scale", "./chart"],
 	function(d3, d3shape, d3scale, Chart) {
-	// "use strict";
+	"use strict";
 
 	class Line extends Chart {
 	  get interpolation() {
@@ -318,19 +318,19 @@ define(["d3", "d3-shape", "d3-scale", "./chart"],
 	      }
 
 	      data.forEach(lineData => {
-          this.appendTracker({
-						svg,
+	      	this.appendTracker({
+            svg,
             vis,
-						data: lineData.values,
-						width,
-						height,
-						marginLeft: options.margins.left + yAxisLabelWidth + yAxisWidth,
+            data: lineData.values,
+            width,
+            height,
+            marginLeft: options.margins.left + yAxisLabelWidth + yAxisWidth,
             marginTop: options.margins.top,
-						x,
-						y,
-						color: options.colors(lineData.name),
-          });
-				});
+            x,
+            y,
+            color: options.colors(lineData.name),
+					});
+	      });
 
 	    } else {
 	      svg.append('text')
@@ -342,7 +342,7 @@ define(["d3", "d3-shape", "d3-scale", "./chart"],
 	  }
 	  
 	  appendTracker({ svg, vis, data, width, height, marginLeft, marginTop, x, y, color }) {
-	  	const xLineClass = "x-hover-line";
+      const xLineClass = "x-hover-line";
 	  	
       const tracker = vis.append("g")
         .attr("class", "current-focus")
