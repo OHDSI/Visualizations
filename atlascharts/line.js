@@ -35,6 +35,25 @@ define(["d3", "d3-shape", "d3-scale", "./chart"],
 	    };
 	  }
 
+    static getMinValue(data, key) {
+      return d3.min(data, d => d3.min(d.values, d => d[key]));
+    }
+
+    static getMaxValue(data, key) {
+      return d3.max(data, d => d3.max(d.values, d => d[key]));
+    }
+
+    static getY(data, height, options) {
+      const minY = Line.getMinValue(data, options.yValue);
+      const maxY = Line.getMaxValue(data, options.yValue);
+
+      const padding = ((maxY - minY) * options.yRangePadding) || options.defaultYRangePadding;
+
+      return options.yScale || d3scale.scaleLinear()
+        .domain([minY - padding, maxY + padding])
+        .range([height, 0]);
+    }
+
 	  render(data, target, w, h, chartOptions) {
 	    // options
 	    const defaults = {
@@ -50,6 +69,8 @@ define(["d3", "d3-shape", "d3-scale", "./chart"],
 	      labelIndexDate: false,
 	      colorBasedOnIndex: false,
         getTooltipBuilder: null,
+        yRangePadding: 0.1,
+        defaultYRangePadding: 10,
       };
       const options = this.getOptions(defaults, chartOptions);
       // container
@@ -181,13 +202,7 @@ define(["d3", "d3-shape", "d3-scale", "./chart"],
 	        x.range([0, width]);
 	      }
 
-	      const y = options.yScale || d3scale.scaleLinear()
-	        .domain([0, d3.max(data, function (d) {
-	          return d3.max(d.values, function (d) {
-	            return d[options.yValue];
-	          });
-	        })])
-	        .range([height, 0]);
+	      const y = Line.getY(data, height, options);
 
 	      const yAxis = d3.axisLeft()
 	        .scale(y)
@@ -363,7 +378,7 @@ define(["d3", "d3-shape", "d3-scale", "./chart"],
         .attr("r", 2)
         .style("fill", color);
 
-      const rect = svg.append("rect");
+      const rect = svg.append("rect").attr("opacity", "0");
       const bisector = d3.bisector(function(d) {
         return d.xValue;
       }).left;
