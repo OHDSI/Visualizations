@@ -35,6 +35,48 @@ define(["d3", "d3-shape", "d3-scale", "./chart"],
 	    };
 	  }
 
+	  static convertData(data) {
+      // convert data to multi-series format if not already formatted
+      if (!data[0].hasOwnProperty('values')) {
+        // assumes data is just an array of values (single series)
+        data = [
+          {
+            name: '',
+            values: data
+          }
+        ];
+      }
+      return data;
+		}
+
+    static getMinValue(data, key) {
+      return d3.min(data, d => d3.min(d.values, d => d[key]));
+    }
+
+    static getMaxValue(data, key) {
+      return d3.max(data, d => d3.max(d.values, d => d[key]));
+    }
+
+    static getZeroBasedY({ data, yValue, height }) {
+      const maxY = Line.getMaxValue(data, yValue);
+
+      return d3scale.scaleLinear()
+        .domain([0, maxY])
+        .range([height, 0]);
+		}
+
+    static getRelativeY({ data, yValue = "yValue", height, yRangePadding = 0.1, defaultYRangePadding = 10 }) {
+      data = Line.convertData(data);
+
+      const minY = Line.getMinValue(data, yValue);
+      const maxY = Line.getMaxValue(data, yValue);
+      const padding = ((maxY - minY) * yRangePadding) || defaultYRangePadding;
+
+      return d3scale.scaleLinear()
+        .domain([minY - padding, maxY + padding])
+        .range([height, 0]);
+    }
+
 	  render(data, target, w, h, chartOptions) {
 	    // options
 	    const defaults = {
@@ -68,16 +110,7 @@ define(["d3", "d3-shape", "d3-scale", "./chart"],
 					);
 
 	    if (data.length > 0) {
-	      // convert data to multi-series format if not already formatted
-	      if (!data[0].hasOwnProperty('values')) {
-	        // assumes data is just an array of values (single series)
-	        data = [
-	          {
-	            name: '',
-	            values: data
-	          }
-	        ];
-	      };
+	      data = Line.convertData(data);
 
 	      this.useTip((tip) => {
 	        tip.attr('class', 'd3-tip')
@@ -181,13 +214,7 @@ define(["d3", "d3-shape", "d3-scale", "./chart"],
 	        x.range([0, width]);
 	      }
 
-	      const y = options.yScale || d3scale.scaleLinear()
-	        .domain([0, d3.max(data, function (d) {
-	          return d3.max(d.values, function (d) {
-	            return d[options.yValue];
-	          });
-	        })])
-	        .range([height, 0]);
+	      const y = options.yScale || Line.getZeroBasedY({ data, height, yValue: options.yValue });
 
 	      const yAxis = d3.axisLeft()
 	        .scale(y)
