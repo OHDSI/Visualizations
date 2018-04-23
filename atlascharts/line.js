@@ -378,7 +378,7 @@ define(["d3", "d3-shape", "d3-scale", "./chart"],
         .attr("r", 2)
         .style("fill", color);
 
-      const rect = svg.append("rect").attr("opacity", "0");
+      const rect = svg.append("rect");
       const bisector = d3.bisector(function(d) {
         return d.xValue;
       }).left;
