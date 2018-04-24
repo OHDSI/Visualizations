@@ -1,6 +1,6 @@
 {
   "name": "@ohdsi/atlascharts",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "Visualizations is a collection of JavaScript modules to support D3 visualizations in web-based applications",
   "main": "dist/atlascharts.umd.js",
   "scripts": {
