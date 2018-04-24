@@ -154,7 +154,7 @@ define(["d3", "d3-shape", "d3-scale", "./chart"],
 	          .text(options.yLabel);
 
 	        bbox = yAxisLabel.node().getBBox();
-	        yAxisLabelWidth = 1.5 * bbox.width; // width is calculated as 1.5 * box height due to rotation anomolies that cause the y axis label to appear shifted.
+	        yAxisLabelWidth = bbox.width * 1.2; // padding 20% of label width.
 	      }
 
 	      let legendWidth = 0;
@@ -222,7 +222,8 @@ define(["d3", "d3-shape", "d3-scale", "./chart"],
 	        .tickFormat(options.yFormat)
 	        .ticks(options.yTicks);
 
-	      const tempXAxis = svg.append('g').attr('class', 'axis');
+
+				const tempXAxis = svg.append('g').attr('class', 'axis');
 	      tempXAxis.call(xAxis);
 	      const xAxisHeight = Math.round(tempXAxis.node().getBBox().height);
 	      const xAxisWidth = Math.round(tempXAxis.node().getBBox().width);
@@ -231,13 +232,18 @@ define(["d3", "d3-shape", "d3-scale", "./chart"],
 	      // trim width if xAxisWidth bleeds over the allocated width.
 	      tempXAxis.remove();
 
-	      const tempYAxis = svg.append('g').attr('class', 'axis');
-	      tempYAxis.call(yAxis);
+	      let yAxisWidth = options.yAxisWidth;
+        
+        if (options.yAxisWidth == undefined) {
+          const tempYAxis = svg.append('g').attr('class', 'axis');
+          tempYAxis.call(yAxis);
 
-	      // update height based on temp xaxis dimension and remove
-	      const yAxisWidth = Math.round(tempYAxis.node().getBBox().width);
-	      width = width - yAxisWidth;
-	      tempYAxis.remove();
+          // update height based on temp xaxis dimension and remove
+          yAxisWidth = Math.round(tempYAxis.node().getBBox().width);
+          tempYAxis.remove();
+        }
+
+        width = width - yAxisWidth;
 
 	      // reset axis ranges
 	      // if x scale is ordinal, then apply rangeRoundBands, else apply standard range.
