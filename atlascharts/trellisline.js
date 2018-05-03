@@ -18,8 +18,8 @@ Authors: Christopher Knoll
 
 */
 
-define(["d3", "d3-scale", "d3-shape", "./chart", "get"],
-	function(d3, d3scale, d3shape, Chart, get) {
+define(["d3", "d3-scale", "d3-shape", "./chart"],
+	function(d3, d3scale, d3shape, Chart) {
 	"use strict";
 
 	class Trellisline extends Chart {
@@ -97,7 +97,7 @@ define(["d3", "d3-scale", "d3-shape", "./chart", "get"],
 	      const offsetScale = d3.scaleLinear().domain(seriesScale.range());
 	      // derive the x vale by using the first trellis/series set of values.
 	      // All series are assumed to contain the same domain of X values.
-	      const s = get(dataByTrellis, '[0].values[0].values', []),
+	      const s = (dataByTrellis[0] && dataByTrellis[0].values[0] && dataByTrellis[0].values[0].values) || [],
 	        v = s[bisect(s, date, 0, s.length - 1)];
 	      if (v && v.date) {
 	        const x = seriesScale(v.date);

@@ -4,12 +4,8 @@ requirejs.config({
 			name: "atlascharts",
 			location: "../atlascharts",
 			main: "main"
-		},
-		{
-			name: "get",
-			location: "../libs/_get"
-		},
-	],
+		}	
+  ],
 	paths: {
 		"numeral": "https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min",
 
