@@ -39,31 +39,29 @@ define(["d3"], function(d3) {
 			var width = w - options.margin.left - options.margin.right,
 				height = h - options.margin.top - options.margin.bottom;
 
-			var x = d3.scale.linear()
+			var x = d3.scaleLinear()
 				.domain(d3.extent(data, function (d) {
 					return d.x;
 				}))
 				.range([0, width]);
 
-			var y = d3.scale.linear()
+			var y = d3.scaleLinear()
 				.domain([0, d3.max(data, function (d) {
 					return d.y;
 				})])
 				.range([height, 0]);
 
-			var xAxis = d3.svg.axis()
+			var xAxis = d3.axisBottom()
 				.scale(x)
 				.tickFormat(options.xFormat)
-				.ticks(10)
-				.orient("bottom");
+				.ticks(10);
 
-			var yAxis = d3.svg.axis()
+			var yAxis = d3.axisLeft()
 				.scale(y)
 				.tickFormat(options.yFormat)
-				.ticks(options.yTicks)
-				.orient("left");
+				.ticks(options.yTicks);
 
-			var area = d3.svg.area()
+			var area = d3.area()
 				.x(function (d) {
 					return x(d.x);
 				})

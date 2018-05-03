@@ -18,8 +18,8 @@ Authors: Christopher Knoll, Mark Valez, Sigfried Gold, Alexander Saltykov
 
 */
 
-define(["d3", "d3-shape", "d3-drag", "numeral", "./chart"],
-	function(d3, d3shape, d3drag, numeral, Chart) {
+define(["d3", "numeral", "./chart"],
+	function(d3, numeral, Chart) {
 	"use strict";
 
 	class Donut extends Chart {
@@ -86,7 +86,7 @@ define(["d3", "d3-shape", "d3-drag", "numeral", "./chart"],
 	        .attr('id', 'chart');
 
 	      // legend
-	      const drag = d3drag.drag()
+	      const drag = d3.drag()
 	        .on('drag', dragged)
 	        .on('start', dragstarted)
 	        .on('end', dragended);
@@ -146,7 +146,7 @@ define(["d3", "d3-shape", "d3-drag", "numeral", "./chart"],
 	      const or = Math.min(h, w-legendWidth) / 2 - options.margins.top;
 	      const ir = Math.min(h, w-legendWidth) / 6 - options.margins.top;
 
-	      const arc = d3shape.arc()
+	      const arc = d3.arc()
 	        .innerRadius(ir)
 	        .outerRadius(or);
 

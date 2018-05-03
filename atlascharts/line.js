@@ -17,8 +17,8 @@ limitations under the License.
 Authors: Christopher Knoll, Mark Valez, Sigfried Gold, Alexander Saltykov
 
 */
-define(["d3", "d3-shape", "d3-scale", "./chart"],
-	function(d3, d3shape, d3scale, Chart) {
+define(["d3", "./chart"],
+	function(d3, Chart) {
 	"use strict";
 
 	class Line extends Chart {
@@ -60,7 +60,7 @@ define(["d3", "d3-shape", "d3-scale", "./chart"],
     static getZeroBasedY({ data, yValue, height }) {
       const maxY = Line.getMaxValue(data, yValue);
 
-      return d3scale.scaleLinear()
+      return d3.scaleLinear()
         .domain([0, maxY])
         .range([height, 0]);
 		}
@@ -72,7 +72,7 @@ define(["d3", "d3-shape", "d3-scale", "./chart"],
       const maxY = Line.getMaxValue(data, yValue);
       const padding = ((maxY - minY) * yRangePadding) || defaultYRangePadding;
 
-      return d3scale.scaleLinear()
+      return d3.scaleLinear()
         .domain([minY - padding, maxY + padding])
         .range([height, 0]);
     }
@@ -190,7 +190,7 @@ define(["d3", "d3-shape", "d3-scale", "./chart"],
 	      let height = h - options.margins.top - options.margins.bottom - xAxisLabelHeight;
 
 	      // define the intial scale (range will be updated after we determine the final dimensions)
-	      const x = options.xScale || d3scale.scaleLinear()
+	      const x = options.xScale || d3.scaleLinear()
 	        .domain([
 	          d3.min(data, d => d3.min(d.values, d => d[options.xValue])),
 	          d3.max(data, d => d3.max(d.values, d => d[options.xValue]))
@@ -256,7 +256,7 @@ define(["d3", "d3-shape", "d3-scale", "./chart"],
 
 	      // create a line function that can convert data[] into x and y points
 
-	      const line = d3shape.line()
+	      const line = d3.line()
 	        .x(d => x(d[options.xValue]))
 	        .y(d => y(d[options.yValue]))
 	        .curve(options.interpolate);

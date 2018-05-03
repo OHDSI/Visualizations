@@ -23,14 +23,14 @@ Procedure,4901,3
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
 	<script src="../build/config.js"></script>
 	<script>
-		requirejs(['atlascharts/aster', 'd3-dsv'], function(aster, d3dsv) {
+		requirejs(['atlascharts/aster', 'd3'], function(aster, d3) {
 			var cartData;
 			var plot = new aster();
 			var target = document.querySelector('#plot');
 			var seriesColors = { "Condition": "#1f77b4", "Drug": "#d62728", "Procedure": "#2ca02c", "Measurement": "#9467bd", "Visit": "#ff7f0e", Observation: "#e377c2"}
 
 			function refreshPlot() {
-				chartData = d3dsv.csvParse(document.querySelector("#chartData").value).map(d => {
+				chartData = d3.csvParse(document.querySelector("#chartData").value).map(d => {
 					d.weight = +d.weight;
 					d.percent = +d.percent;
 					return d;
