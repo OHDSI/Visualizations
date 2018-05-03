@@ -44,7 +44,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
 	<script src="../build/config.js"></script>
 	<script>
-		requirejs(['d3', 'd3-scale', 'atlascharts/trellisline'], function(d3, d3scale, trellisline) {
+		requirejs(['d3', 'atlascharts/trellisline'], function(d3, trellisline) {
 			var cartData;
 			var plot = new trellisline();
 			var target = document.querySelector('#plot');
@@ -78,7 +78,7 @@
 					xFormat: d3.timeFormat("%Y"),
 					yFormat: d3.format("0.2f"),
 					tickPadding: 20,
-					colors: d3scale.scaleOrdinal()
+					colors: d3.scaleOrdinal()
 						.domain(["MALE", "FEMALE"])
 						.range(["#1f77b4", "#ff7f0e"])						
 				});

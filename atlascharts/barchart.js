@@ -18,8 +18,8 @@ Authors: Christopher Knoll
 
 */
 
-define(["d3", "d3-scale", "./chart"],
-	function(d3, d3scale, Chart) {
+define(["d3", "./chart"],
+	function(d3, Chart) {
 	"use strict";
 
 	class BarChart extends Chart {
@@ -66,7 +66,7 @@ define(["d3", "d3-scale", "./chart"],
 				.padding(.1)
 	      .round(1.0 / data.length);
 
-	    const y = d3scale.scaleLinear()
+	    const y = d3.scaleLinear()
 	      .range([height, 0]);
 
 	    const xAxis = d3.axisBottom()

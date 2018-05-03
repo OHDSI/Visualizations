@@ -18,8 +18,8 @@ Authors: Christopher Knoll, Mark Valez, Sigfried Gold, Alexander Saltykov
 
 */
 
-define(["d3", "d3-scale", "./chart"],
-	function(d3, d3scale, Chart) {
+define(["d3", "./chart"],
+	function(d3, Chart) {
 	"use strict";
 
 	class Boxplot extends Chart {
@@ -110,11 +110,11 @@ define(["d3", "d3-scale", "./chart"],
 	    let height = h - options.margins.top - xAxisLabelHeight - options.margins.bottom;
 
 	    // define the intial scale (range will be updated after we determine the final dimensions)
-	    const x = d3scale.scaleBand()
+	    const x = d3.scaleBand()
 	      .range([0, width])
 	      .round(1.0 / data.length)
 	      .domain(data.map(d => d.Category));
-	    const y = d3scale.scaleLinear()
+	    const y = d3.scaleLinear()
 	      .range([height, 0])
 	      .domain([options.yMin || 0, options.yMax || d3.max(data, d => d.max)]);
 

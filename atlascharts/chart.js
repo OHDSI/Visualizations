@@ -18,8 +18,8 @@ Author: Alexander Saltykov
 
 */
 
-define(["d3", "d3-tip", "d3-selection", "d3-scale"],
-	function(d3, d3tip, d3selection, d3scale) {
+define(["d3", "d3-tip"],
+	function(d3, d3tip) {
 	"use strict";
 	
 	class Chart {
@@ -44,7 +44,7 @@ define(["d3", "d3-tip", "d3-selection", "d3-scale"],
 		      },
 		      xFormat: d3.format(',.0f'),
 		      yFormat: d3.format('s'),
-		      colors: d3scale.scaleOrdinal(d3scale.schemeCategory20.concat(d3scale.schemeCategory20c)),
+		      colors: d3.scaleOrdinal(d3.schemeCategory20.concat(d3.schemeCategory20c)),
 		    },
 		    // clone objects
 			  Object.assign({}, chartSpecificDefaults),
@@ -57,7 +57,7 @@ define(["d3", "d3-tip", "d3-selection", "d3-scale"],
 
 	    this.destroyTipIfExists();
 
-	    const container = d3selection.select(target);
+	    const container = d3.select(target);
 	    container.select('svg').remove();
 	    const chart = container.append('svg')
 	      .attr('preserveAspectRatio', 'xMinYMin meet')

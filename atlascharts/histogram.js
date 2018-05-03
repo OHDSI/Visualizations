@@ -18,8 +18,8 @@ Authors: Christopher Knoll, Alexander Saltykov
 
 */
 
-define(["d3", "d3-scale", "numeral", "./chart"],
-	function(d3, d3scale, numeral, Chart) {
+define(["d3", "numeral", "./chart"],
+	function(d3, numeral, Chart) {
 	"use strict";
 
 	class Histogram extends Chart {
@@ -98,7 +98,7 @@ define(["d3", "d3-scale", "numeral", "./chart"],
 	    const defaults = {
 	      ticks: 10,
 	      yTicks: 4,
-	      yScale: d3scale.scaleLinear(),
+	      yScale: d3.scaleLinear(),
 	      boxplotHeight: 10,
 	    };
 	    const options = this.getOptions(defaults, chartOptions);
@@ -159,7 +159,7 @@ define(["d3", "d3-scale", "numeral", "./chart"],
 	    let height = h - options.margins.top - options.margins.bottom - xAxisLabelHeight;
 
 	    // define the intial scale (range will be updated after we determine the final dimensions)
-	    const x = this.xScale = d3scale.scaleLinear()
+	    const x = this.xScale = d3.scaleLinear()
 	      .domain(options.xDomain || [
 	        d3.min(data, d => d.x),
 	        d3.max(data, d => d.x + d.dx),

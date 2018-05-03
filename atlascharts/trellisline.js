@@ -18,8 +18,8 @@ Authors: Christopher Knoll
 
 */
 
-define(["d3", "d3-scale", "d3-shape", "./chart"],
-	function(d3, d3scale, d3shape, Chart) {
+define(["d3", "./chart"],
+	function(d3, Chart) {
 	"use strict";
 
 	class Trellisline extends Chart {
@@ -221,7 +221,7 @@ define(["d3", "d3-scale", "d3-shape", "./chart"],
 	    let width = w - options.margins.left - yAxisLabelWidth - options.margins.right;
 	    let height = h - options.margins.top - trellisLabelHeight - trellisHeadingHeight- seriesLabelHeight - options.margins.bottom*2;
 
-	    const trellisScale = d3scale.scaleBand()
+	    const trellisScale = d3.scaleBand()
 	      .domain(options.trellisSet)
 	      .range([0, width])
 	      .paddingOuter(0.2)
@@ -301,7 +301,7 @@ define(["d3", "d3-scale", "d3-shape", "./chart"],
 	        .attr('dy', '1em');
 	    }
 
-	    const seriesLine = d3shape.line()
+	    const seriesLine = d3.line()
 	      .x(d => seriesScale(d.date))
 	      .y(d => yScale((d.Y_PREVALENCE_1000PP === 0 || d.Y_PREVALENCE_1000PP)
 	          ? d.Y_PREVALENCE_1000PP

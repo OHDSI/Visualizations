@@ -18,7 +18,7 @@ Authors: Christopher Knoll
 
 */
 
-define(["d3-shape", "d3-scale", "./chart"], function (d3shape, d3scale, Chart) {
+define(["d3", "./chart"], function (d3, Chart) {
 	"use strict";
 
 	class Aster extends Chart {
@@ -38,21 +38,21 @@ define(["d3-shape", "d3-scale", "./chart"], function (d3shape, d3scale, Chart) {
 				innerRadius = 0.3 * radius;
 
 			// linear scale
-			const r = d3scale.scaleLinear()
+			const r = d3.scaleLinear()
 				.domain([0, options.maxPercent])
 				.range([innerRadius, radius]);
 
-			const arc = d3shape.arc()
+			const arc = d3.arc()
 				.innerRadius(innerRadius)
 				.outerRadius(d => r(d.data.percent));
 
-			const outlineArc = d3shape.arc()
+			const outlineArc = d3.arc()
 				.innerRadius(innerRadius)
 				.outerRadius(radius);
 
 			const arcRange = [0, 2 * Math.PI];
 
-			const pie = d3shape.pie()
+			const pie = d3.pie()
 				.sort(null)
 				.startAngle(arcRange[0])
 				.endAngle(arcRange[1])
