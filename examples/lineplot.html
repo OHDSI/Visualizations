@@ -47,7 +47,7 @@
 		requirejs(['atlascharts/line'], function(line) {
 			var cartData;
 			var lineplot = new line();
-			var target = document.querySelector('#plot');
+			var target = '#plot';
 			var seriesColors = { "Ascending": "#00ff00", "Descending": "#ff0000", "Stable": "#0000ff" }
 
 			function refreshPlot() {
