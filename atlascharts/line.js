@@ -49,6 +49,27 @@ define(["d3", "./chart"],
       return data;
 		}
 
+    // Returns a function, that, as long as it continues to be invoked, will not
+    // be triggered. The function will be called after it stops being called for
+    // N milliseconds. If `immediate` is passed, trigger the function on the
+    // leading edge, instead of the trailing.
+    static debounce(func, wait, immediate) {
+      var timeout;
+      return function() {
+        var context = this, args = arguments;
+        var later = function() {
+          timeout = null;
+          if (!immediate) func.apply(context, args);
+        };
+        var callNow = immediate && !timeout;
+        if (timeout) {
+          window.cancelAnimationFrame(timeout);
+        }
+        timeout = window.requestAnimationFrame(later);
+        if (callNow) func.apply(context, args);
+      };
+    };
+
     static getMinValue(data, key) {
       return d3.min(data, d => d3.min(d.values, d => d[key]));
     }
@@ -77,8 +98,22 @@ define(["d3", "./chart"],
         .range([height, 0]);
     }
 
-	  render(data, target, w, h, chartOptions) {
-	    // options
+
+    render(data, target, w, h, chartOptions) {
+
+      if (!target.doResize){
+        target.doResize = Line.debounce(() => {
+          if (target.parentElement == null) {
+            window.removeEventListener("resize", target.doResize);
+          } else {
+            this.render(data, target,target.clientWidth,target.clientHeight,chartOptions);
+          }
+        }, 250);        
+        window.addEventListener("resize", target.doResize);
+      } 
+      
+      
+      // options
 	    const defaults = {
 	      xFormat: this.formatters.formatSI(3),
 	      yFormat: this.formatters.formatSI(3),
@@ -95,7 +130,8 @@ define(["d3", "./chart"],
         getTooltipBuilder: null,
       };
       const options = this.getOptions(defaults, chartOptions);
-      // container
+      
+      // container SVG
       const svg = this.createSvg(target, w, h);
 
       const tooltipBuilder = typeof options.getTooltipBuilder === 'function'
@@ -183,10 +219,14 @@ define(["d3", "./chart"],
 	          ${options.margins.top}
 	        )`);
 	        legendWidth += maxWidth + 5;
+          
+          if (legendWidth > w/3) {
+            legend.style('display',"none");
+          }
 	      }
 
 	      // calculate an intial width and height that does not take into account the tick text dimensions
-	      let width = w - options.margins.left - options.margins.right - yAxisLabelWidth - legendWidth;
+	      let width = w - options.margins.left - options.margins.right - yAxisLabelWidth - (legendWidth > w/5 ? 0 : legendWidth);
 	      let height = h - options.margins.top - options.margins.bottom - xAxisLabelHeight;
 
 	      // define the intial scale (range will be updated after we determine the final dimensions)
@@ -312,30 +352,6 @@ define(["d3", "./chart"],
 	        x: 0,
 	        y: 0
 	      };
-	      const self = this;
-	      series.selectAll('.focus')
-	        .data(series => series.values)
-	        .enter()
-	        .append('circle')
-	        .attr('class', 'focus')
-	        .attr('r', 4)
-	        .attr('transform', (d) => {
-	          const xVal = x(d[options.xValue]);
-	          const yVal = y(d[options.yValue]);
-	          if (d[options.xValue] === 0 && indexPoints.y === 0) {
-	            indexPoints.x = xVal;
-	            indexPoints.y = yVal;
-	          }
-	          return `translate(${xVal}, ${yVal})`;
-	        })
-	        .on('mouseover', function (d) {
-	          d3.select(this).style('opacity', '1');
-	          self.tip.show(d, event.target);
-	        })
-	        .on('mouseout', function (d) {
-	          d3.select(this).style('opacity', '0');
-	          self.tip.hide(d, event.target);
-	        });
 
         vis.append('g')
 	        .attr('class', 'x axis')
@@ -354,20 +370,15 @@ define(["d3", "./chart"],
 	          .attr('height', height);
 	      }
 
-	      data.forEach(lineData => {
-	      	this.appendTracker({
-            svg,
-            vis,
-            data: lineData.values,
-            width,
-            height,
-            marginLeft: options.margins.left + yAxisLabelWidth + yAxisWidth,
-            marginTop: options.margins.top,
-            x,
-            y,
-            color: options.colors(lineData.name),
-					});
-	      });
+        this.appendTracker({
+          vis,
+          data,
+          width,
+          height,
+          x,
+          y,
+          options
+        });
 
 	    } else {
 	      svg.append('text')
@@ -378,33 +389,42 @@ define(["d3", "./chart"],
 
 	  }
 	  
-	  appendTracker({ svg, vis, data, width, height, marginLeft, marginTop, x, y, color }) {
+	  appendTracker({vis, data, width, height, x, y, options}) {
       const xLineClass = "x-hover-line";
 	  	
       const tracker = vis.append("g")
         .attr("class", "current-focus")
         .style("display", "none");
 
-      tracker.append("line")
+      const line = tracker.append("line")
         .attr("class", xLineClass)
-        .style("stroke", color)
         .style("stroke-width", "2px")
         .style("stroke-dasharray", "3,3")
-        .attr("y1", 0)
-        .attr("y2", height);
+        .attr("y1", 0);
 
-      tracker.append("circle")
-        .attr("r", 2)
-        .style("fill", color);
-
-      const rect = svg.append("rect")
+      const circle = tracker.append("circle")
+        .attr("r", 2);
+      
+      const rect = vis.append("rect")
 				.style("opacity", 0);
-      const bisector = d3.bisector(function(d) {
-        return d.xValue;
-      }).left;
+
+      // will use a quadtree to identify datanodes via x/y
+      const tree = d3.quadtree()
+        .x(d => x(d[options.xValue]))
+        .y(d => y(d[options.yValue]));
+      
+      const flatData = data.reduce((flattened, series) => {
+        return flattened.concat(series.values.map(row => {
+          row.name = series.name
+          return row;
+        }));
+      },[]);
+      
+      var lastDatum = null;
+      
+      tree.addAll(flatData);
 
       rect
-        .attr("transform", `translate(${marginLeft}, ${marginTop})`)
         .attr("class", "overlay")
         .attr("width", width)
         .attr("height", height)
@@ -415,17 +435,19 @@ define(["d3", "./chart"],
           this.tip.hide({}, tracker.node());
         });
 
-      rect.node().addEventListener("mousemove", (e) => {
-        const offsetX = e.offsetX - marginLeft;
-        const x0 = x.invert(offsetX),
-          i = bisector(data, x0, 1),
-          d0 = data[i - 1],
-          d1 = data[i],
-          d = x0 - d0.xValue > d1.xValue - x0 ? d1 : d0;
+      rect.on("mousemove", () => {
+        const e = d3.event, mouse = d3.mouse(e.target);
 
-        tracker.attr("transform", "translate(" + x(d.xValue) + "," + y(d.yValue) + ")");
-        tracker.select(`.${xLineClass}`).attr("y2", height - y(d.yValue));
+        const d = tree.find(mouse[0], mouse[1]);
+        
+        // set tracker element styles
+        circle.style("fill", options.colors(d.name));
+        line.style("stroke", options.colors(d.name));
+        line.attr("y2", height - y(d[options.yValue]));
+        
+        tracker.attr("transform", "translate(" + x(d[options.xValue]) + "," + y(d[options.yValue]) + ")");
         this.tip.show(d, tracker.node());
+        
       })
 		}
 

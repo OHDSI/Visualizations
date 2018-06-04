@@ -11,8 +11,7 @@ const config = {
   },
   externals: {
     d3: 'd3',
-    numeral: 'numeral',
-    get: 'get'
+    numeral: 'numeral'
   },
   module: {
     loaders: [{
