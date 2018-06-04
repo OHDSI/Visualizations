@@ -101,6 +101,10 @@ define(["d3", "./chart"],
 
     render(data, target, w, h, chartOptions) {
 
+      if (typeof target == "string") {
+        target = document.querySelector(target);
+      }
+      
       if (!target.doResize){
         target.doResize = Line.debounce(() => {
           if (target.parentElement == null) {

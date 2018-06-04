@@ -48,7 +48,7 @@
 			var cartData;
 			// works differently with bundles: the entire module was required(), so line is contained by the charts module.
 			var lineplot = new charts.line();
-			var target = document.querySelector('#plot');
+			var target = '#plot';
 
 			function refreshPlot() {
 				chartData = JSON.parse(document.querySelector("#chartData").value);
