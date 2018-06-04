@@ -47,9 +47,10 @@ This will build and minify the library. To files will be generated in dist: atla
 After new commits are added to master, and the libary is ready for a new version to be published to the NPM registry, the following commands will increment the version and publish to the NPM registry:
 
 ```bash
-npm version [{verson number} | major | minor | patch] # use major or minor based on the type of change for this relase.
+npm version --no-git-tag-version [{verson number} | major | minor | patch] # use major or minor based on the type of change for this relase.
 npm publish --access public # this is a scoped package to @ohdsi and therefore must specify that this should publish public.
 ```
+Note the ```--no-git-tag-version``` indicates that the npm should not create a git tag.  Tagging versions happens during release time out of github.
 
 
 
