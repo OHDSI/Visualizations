@@ -44,7 +44,10 @@ define(['d3', './chart'],
 					<div>X: ${d[options.xValue]}</div>
 					<div>Y: ${d[options.yValue]}</div>
 					`;
-				}
+				},
+				circleRadius: 1,
+				addDiagonal: false,
+				diagonalColor: '#ccc',
 			};
 	    const options = this.getOptions(defaults, chartOptions);
 	    if (chartOptions.colors) {
@@ -226,7 +229,7 @@ define(['d3', './chart'],
 					.enter()
 					.append('circle')
 					.attr('class', 'dot')
-					.attr('r', 1)
+					.attr('r', options.circleRadius)
 					.style('fill', function (d, i) {
 						return options.colors(d.seriesName);
 					})
@@ -235,7 +238,17 @@ define(['d3', './chart'],
 						const yVal = y(d[options.yValue]);
 						return 'translate(' + xVal + ',' + yVal + ')';
 					});
-
+				
+				if (options.addDiagonal) {
+					series.append("line")
+						.attr("x1", 0)
+						.attr("y1", height)
+						.attr("x2", width)
+						.attr("y2", 0)
+						.attr("stroke-width", 1)
+						.attr("stroke", options.diagonalColor)
+						.attr("stroke-dasharray", "5,5");
+				}
 
 				if (options.showSeriesLabel) {
 					series.append('text')
@@ -268,7 +281,7 @@ define(['d3', './chart'],
 					.enter()
 					.append('circle')
 					.attr('class', 'focus')
-					.attr('r', 1)
+					.attr('r', options.circleRadius)
 					.attr('transform', function (d) {
 						const xVal = x(d[options.xValue]);
 						const yVal = y(d[options.yValue]);
