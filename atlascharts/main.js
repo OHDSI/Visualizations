@@ -16,6 +16,7 @@ define(function(require) {
 	var trellisline = require("./trellisline");
 	var treemap = require("./treemap");
 	var scatterplot = require("./scatterplot");
+	var splitBoxplot = rquire("./split-boxplot");
 	
 	module.chart = chart;
 	module.aster = aster;
@@ -28,6 +29,7 @@ define(function(require) {
 	module.trellisline = trellisline;
 	module.treemap = treemap;
 	module.scatterplot = scatterplot;
+	module.splitBoxplot = splitBoxplot;
 	
 	return module;
 	

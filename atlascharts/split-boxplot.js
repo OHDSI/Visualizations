@@ -1,0 +1,252 @@
+/* 
+
+Copyright 2017 Observational Health Data Sciences and Informatics
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+Authors: Christopher Knoll
+
+*/
+
+define(["d3", "./chart"],
+	function(d3, Chart) {
+	"use strict";
+
+	class SplitBoxplot extends Chart {
+	  render(data, target, w, h, chartOptions) {
+	    // options
+			const defaults = {boxHeight: 10};
+			
+	    const options = this.getOptions(defaults, chartOptions);
+	    // container
+	    const svg = this.createSvg(target, w, h);
+
+	    const valueFormatter = this.formatters.formatSI(3);
+
+	    this.useTip((tip) => {
+	      tip.attr('class', 'd3-tip')
+	      .offset([-10, 0])
+	      .html(d =>
+	        `<table class='boxplotValues'>
+	          <tr>
+	            <td>Max:</td>
+	            <td>${valueFormatter(d.max)}</td>
+	          </tr>
+	          <tr>
+	            <td>P90:</td>
+	            <td>${valueFormatter(d.UIF)}</td>
+	          </tr>
+	          <tr>
+	            <td>P75:</td>
+	            <td>${valueFormatter(d.q3)}</td>
+	          </tr>
+	          <tr>
+	            <td>Median:</td>
+	            <td>${valueFormatter(d.median)}</td>
+	          </tr>
+	          <tr>
+	            <td>P25:</td>
+	            <td>${valueFormatter(d.q1)}</td>
+	          </tr>
+	          <tr>
+	            <td>P10:</td>
+	            <td>${valueFormatter(d.LIF)}</td>
+	          </tr>
+	          <tr>
+	            <td>Min:</td>
+	            <td>${valueFormatter(d.min)}</td>
+	          </tr>
+	        </table>`
+	      );
+	    });
+
+			// assign a category if it is absent
+			data.forEach(d => d.Category = d.Category || "Default");
+			
+	    let width = w - options.margins.left - options.margins.right;
+	    let height = h - options.margins.top - options.margins.bottom;
+
+			// the orientaiton of this plot is horizontal, where the x axis will contain the units in the distrubiton, and the y axis will be the different categories of data
+			
+	    // define the intial scale (range will be updated after we determine the final dimensions)
+
+	    const x = d3.scaleLinear()
+	      .range([0, width])
+	      .domain([options.yMin || 0, options.yMax || d3.max(data, d => Math.max(d.target.max, d.compare.max))]);
+			
+	    const y = d3.scaleBand()
+	      .range([0, width])
+	      .round(1.0 / data.length)
+	      .domain(data.map(d => d.Category));			
+
+	    const xAxis = d3.axisBottom()
+	      .scale(x)
+	      .tickFormat(options.yFormat)
+	      .ticks(5);
+			
+	    const yAxis = d3.axisLeft()
+	      .scale(y);
+
+
+			let xAxisHeight = 0, xAxisWidth = xAxisHeight;
+	    if (options.showXAxis) {
+				// create temporary x axis
+				const tempXAxis = svg.append('g').attr('class', 'axis');
+				tempXAxis.call(xAxis);
+
+				// update width & height based on temp xaxis dimension and remove
+				xAxisHeight = Math.round(tempXAxis.node().getBBox().height);
+				xAxisWidth = Math.round(tempXAxis.node().getBBox().width);
+				height -= xAxisHeight;
+				width -= Math.max(0, (xAxisWidth - width)); // trim width if
+				// xAxisWidth bleeds over the allocated width.
+				tempXAxis.remove();				
+			}
+
+			let yAxisWidth = 0;
+	    if (options.showYAxis) {
+				// create temporary y axis
+				const tempYAxis = svg.append('g').attr('class', 'axis');
+				tempYAxis.call(yAxis);
+
+				// update height based on temp xaxis dimension and remove
+				yAxisWidth = Math.round(tempYAxis.node().getBBox().width);
+				width -= yAxisWidth;
+				tempYAxis.remove();
+			}
+	    // reset axis ranges
+	    x.range([0, width]);
+	    y.range([height, 0]);
+
+	    const boxHeight = options.boxHeight;
+	    let boxOffset = (y.bandwidth() / 2) - (boxHeight / 2);
+	    let whiskerHeight = boxHeight / 2;
+
+	    const chart = svg.append('g')
+	      .attr('transform', `translate(
+	          ${options.margins.left + yAxisWidth},
+	          ${options.margins.top}
+	        )`);
+
+	    // draw main box and whisker plots
+	    const boxplots = chart.selectAll('.boxplot')
+	      .data(data)
+	      .enter().append('g')
+	      .attr('class', 'boxplot')
+	      .attr('transform', d => `translate(0, ${y(d.Category)})`);
+
+	    const self = this;
+			
+			// set up scale for drawing box height
+			const boxScale = d3.scaleLinear()
+	      .range([boxHeight/2, 0])
+	      .domain([0,boxHeight]);
+			
+			const bandWidth = y.bandwidth();
+
+	    // for each g element (containing the boxplot render surface), draw the whiskers, bars and rects
+	    boxplots.each(function (boxplotData) {
+	      const boxplot = d3.select(this);
+				
+				const boxplotContainer = boxplot.append('g')
+					.attr('transform', () => `translate(0, ${boxOffset - 2})`);
+				
+				const targetBox = boxplotContainer.append('g')
+					.datum( boxplotData.target)
+					.attr('class', 'target');
+				const compareBox = boxplotContainer.append('g')
+					.datum(boxplotData.compare)
+					.attr('class', 'compare')
+					.attr('transform', () => `translate(0, ${boxHeight + 2}) scale(1,-1)`);
+				
+				let parts = [ 
+					{ "boxPlotData": boxplotData.target, "boxplot": targetBox},
+					{ "boxPlotData": boxplotData.compare, "boxplot": compareBox},
+				];
+				
+				parts.forEach(part => {
+					let d = part.boxPlotData;
+					let boxplot = part.boxplot;
+					
+					if (d.LIF != d.q1) { // draw whisker
+						boxplot.append('line')
+							.attr('class', 'bar')
+							.attr('x1', x(d.LIF))
+							.attr('y1', boxScale(0))
+							.attr('x2', x(d.LIF))
+							.attr('y2', boxScale(whiskerHeight));
+						boxplot.append('line')
+							.attr('class', 'whisker')
+							.attr('x1', x(d.LIF))
+							.attr('y1', boxScale(0))
+							.attr('x2', x(d.q1))
+							.attr('y2', boxScale(0));
+					}
+
+					boxplot.append('rect')
+						.attr('class', 'box')
+						.attr('x', x(d.q1))
+						.attr('y', boxScale(boxHeight))
+						.attr('width', Math.max(1, x(d.q3) - x(d.q1)))
+						.attr('height', boxScale(0) - boxScale(boxHeight))
+						.on('mouseover', d => self.tip.show(d, event.target))
+						.on('mouseout', d => self.tip.hide(d, event.target));
+
+					boxplot.append('line')
+						.attr('class', 'median')
+						.attr('x1', x(d.median))
+						.attr('y1', boxScale(0))
+						.attr('x2', x(d.median))
+						.attr('y2', boxScale(boxHeight));
+
+					if (d.UIF != d.q3) { // draw whisker
+						boxplot.append('line')
+							.attr('class', 'bar')
+							.attr('x1', x(d.UIF))
+							.attr('y1', boxScale(0))
+							.attr('x2', x(d.UIF))
+							.attr('y2', boxScale(whiskerHeight));
+						boxplot.append('line')
+							.attr('class', 'whisker')
+							.attr('x1', x(d.q3))
+							.attr('y1', boxScale(0))
+							.attr('x2', x(d.UIF))
+							.attr('y2', boxScale(0));
+					}
+					// to do: add max/min indicators					
+				});
+	    });
+
+	    // draw x and y axis
+			if (options.showXAxis) {
+				chart.append('g')
+					.attr('class', 'x axis')
+					.attr('transform', `translate(0, ${height})`)
+					.call(xAxis);
+			}
+			
+			if (options.showYAxis) {
+				chart.append('g')
+					.attr('class', 'y axis')
+					.attr('transform', `translate(0, 0)`)
+					.call(yAxis)
+					.selectAll('.tick text')
+					.call(this.wrap, y.bandwidth() || y.range());
+			}
+			
+	  }
+	}
+	
+	return SplitBoxplot;
+	
+});
