@@ -1,0 +1,158 @@
+<html>
+
+<head>
+	<title>Visualizations: Sunburst</title>
+	<link href="example.css" rel="stylesheet">
+	<link href="chart.css" rel="stylesheet">
+</head>
+
+<body>
+	<h1>Sunburst Example</h1>
+	<div>This plot shows a sunburst</div>
+	<div style="width:50%" id="plot"></div>
+	<hr/>
+	<div>Data:</div>
+	<textarea id="chartData" style="width:600px; height:400px">
+{
+	"data": {
+		"name":"root",
+		"children":[
+			{
+				"name":"1",
+				"children":[
+					{
+						"name":"2",
+						"children":[
+							{
+								"name":"end",
+								"size":128
+							}
+						]
+					},
+					{
+						"name":"4",
+						"children":[
+							{
+								"name":"6",
+								"children":[
+									{
+										"name":"end",
+										"size":64
+									}
+								]
+							},
+							{
+								"name":"end",
+								"size":64
+							}
+						]
+					},
+					{
+						"name":"end",
+						"size":512
+					}
+				]
+			},
+			{
+				"name":"2",
+				"children":[
+					{
+						"name":"1",
+						"children":[
+							{
+								"name":"end",
+								"size":128
+							}
+						]
+					},
+					{
+						"name":"end",
+						"size":256
+					}
+				]
+			},
+			{
+				"name":"4",
+				"children":[
+					{
+						"name":"end",
+						"size":128
+					}
+				]
+			},
+			{
+				"name":"8",
+				"children":[
+					{
+						"name":"end",
+						"size":64
+					}
+				]
+			},
+			{
+				"name":"6",
+				"children":[
+					{
+						"name":"end",
+						"size":32
+					}
+				]
+			}
+		]
+	},
+	"lookup" : [
+		{ "key": "1", "value": "Treatment 1"},
+		{ "key": "2", "value": "Treatment 2"},
+		{ "key": "4", "value": "Treatment 3"},
+		{ "key": "8", "value": "Treatment 4"}
+	]
+}
+	</textarea>
+	<button id="reload">Reload</button>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
+	<script src="../build/config.js"></script>
+	<script>
+		requirejs(['atlascharts/sunburst'], function(Sunburst) {
+			var cartData;
+			var plot = new Sunburst();
+			var target = document.querySelector('#plot');
+
+			function split(node) {
+
+				if (isNaN(node.data.name)) {
+					return [node];
+				};
+				
+				let splitNodes = [...Number.parseInt(node.data.name).toString(2)].reverse().reduce((result, bit, i) => {
+					if (bit == "1") {
+						let nodeClone = Object.assign({}, node);
+						nodeClone.data = {name: (1<<i).toString()};
+						result.push(nodeClone);
+					}
+					return result;
+				},[])
+				
+				const bandWidth = (node.y1 - node.y0) / splitNodes.length;
+				
+				return splitNodes.map((node, i) => {
+					node.y0 = node.y0 + (i * bandWidth);
+					node.y1 = node.y0 + bandWidth;
+					return node;
+				})
+				
+			}
+
+			function refreshPlot() {
+				chartData = JSON.parse(document.querySelector("#chartData").value);
+				plot.render(chartData.data, target, 600,600, {split: split});
+			}
+			
+			
+			document.querySelector("#reload").addEventListener("click", function() {
+				refreshPlot();	
+			});
+			refreshPlot();
+		});
+	</script>
+</body>
+</html>

@@ -17,6 +17,8 @@ define(function(require) {
 	var treemap = require("./treemap");
 	var scatterplot = require("./scatterplot");
 	var splitBoxplot = require("./split-boxplot");
+	var sunburst = require("./sunburst");
+	var util = require("./util");
 	
 	module.chart = chart;
 	module.aster = aster;
@@ -30,6 +32,9 @@ define(function(require) {
 	module.treemap = treemap;
 	module.scatterplot = scatterplot;
 	module.splitBoxplot = splitBoxplot;
+	module.sunburst = sunburst;
+	module.util = util;
+	
 	
 	return module;
 	
