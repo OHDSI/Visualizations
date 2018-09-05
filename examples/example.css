@@ -19,3 +19,21 @@ textarea {
 	stroke-dasharray: 3, 3;
 	stroke: #ff9315;
 }
+
+.boxplot .compare .median {
+	stroke: #0d61ff;
+}
+.boxplot .compare line {
+	stroke: #0d61ff;
+	stroke-width: 1px;
+}
+.boxplot .compare rect,
+.boxplot .compare circle {
+	fill: rgba(42, 116, 255, 0.76);
+	stroke: #0d61ff;
+	stroke-width: 1px;
+}
+.boxplot .compare .whisker {
+	stroke-dasharray: 3, 3;
+	stroke: #0d61ff;
+}
