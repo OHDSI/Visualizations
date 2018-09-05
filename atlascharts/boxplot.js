@@ -29,7 +29,7 @@ define(["d3", "./chart"],
 	    // container
 	    const svg = this.createSvg(target, w, h);
 
-	    const valueFormatter = this.formatters.formatSI(3);
+	    const valueFormatter = options.valueFormatter || this.formatters.formatSI(3);
 
 	    this.useTip((tip) => {
 	      tip.attr('class', 'd3-tip')
