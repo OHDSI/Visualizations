@@ -25,7 +25,16 @@ define(["d3", "./boxplot"],
 	class SplitBoxplot extends Boxplot {
 	  render(data, target, w, h, chartOptions) {
 	    // options
-			const defaults = {boxHeight: 10, valueFormatter: this.formatters.formatSI(3)};
+			const defaults = {
+				boxHeight: 10, 
+				valueFormatter: this.formatters.formatSI(3), 
+				margins: {
+		        top: 0,
+		        right: 0,
+		        bottom: 0,
+		        left: 0,
+		      }
+			};
 			
 	    const options = this.getOptions(defaults, chartOptions);
 	    // container
@@ -47,10 +56,10 @@ define(["d3", "./boxplot"],
 
 	    const x = d3.scaleLinear()
 	      .range([0, width])
-	      .domain([options.yMin || 0, options.yMax || d3.max(data, d => Math.max(d.target.max, d.compare.max))]);
+	      .domain([options.xMin || d3.min(data, d => Math.min(d.target.min, d.compare.min)), options.xMax || d3.max(data, d => Math.max(d.target.max, d.compare.max))]);
 			
 	    const y = d3.scaleBand()
-	      .range([0, width])
+	      .range([0, height])
 	      .round(1.0 / data.length)
 	      .domain(data.map(d => d.Category));			
 
@@ -102,7 +111,7 @@ define(["d3", "./boxplot"],
 	          ${options.margins.left + yAxisWidth},
 	          ${options.margins.top}
 	        )`);
-
+			
 	    // draw main box and whisker plots
 	    const boxplots = chart.selectAll('.boxplot')
 	      .data(data)
@@ -113,9 +122,13 @@ define(["d3", "./boxplot"],
 	    const self = this;
 			
 			// set up scale for drawing box height
-			const boxScale = d3.scaleLinear()
+			const topScale = d3.scaleLinear()
 	      .range([boxHeight/2, 0])
 	      .domain([0,boxHeight]);
+			
+			const bottomScale = d3.scaleLinear()
+	      .range([0,boxHeight/2])
+	      .domain([0,boxHeight]);			
 			
 			const bandWidth = y.bandwidth();
 
@@ -124,7 +137,7 @@ define(["d3", "./boxplot"],
 	      const boxplot = d3.select(this);
 				
 				const boxplotContainer = boxplot.append('g')
-					.attr('transform', () => `translate(0, ${boxOffset - 2})`);
+					.attr('transform', () => `translate(0, ${boxOffset})`);
 				
 				const targetBox = boxplotContainer.append('g')
 					.datum( boxplotData.target)
@@ -132,16 +145,17 @@ define(["d3", "./boxplot"],
 				const compareBox = boxplotContainer.append('g')
 					.datum(boxplotData.compare)
 					.attr('class', 'compare')
-					.attr('transform', () => `translate(0, ${boxHeight + 2}) scale(1,-1)`);
+					.attr('transform', () => `translate(0, ${boxHeight/2 + 2})`);
 				
 				let parts = [ 
-					{ "boxPlotData": boxplotData.target, "boxplot": targetBox},
-					{ "boxPlotData": boxplotData.compare, "boxplot": compareBox},
+					{ "boxPlotData": boxplotData.target, "boxplot": targetBox, boxScale: topScale},
+					{ "boxPlotData": boxplotData.compare, "boxplot": compareBox, boxScale: bottomScale, "tipDirection": "s", tipOffset: [10,0]}
 				];
 				
 				parts.forEach(part => {
 					let d = part.boxPlotData;
 					let boxplot = part.boxplot;
+					let boxScale = part.boxScale;
 					
 					if (d.LIF != d.q1) { // draw whisker
 						boxplot.append('line')
@@ -161,10 +175,10 @@ define(["d3", "./boxplot"],
 					boxplot.append('rect')
 						.attr('class', 'box')
 						.attr('x', x(d.q1))
-						.attr('y', boxScale(boxHeight))
+						.attr('y', Math.min(boxScale(0), boxScale(boxHeight)))
 						.attr('width', Math.max(1, x(d.q3) - x(d.q1)))
-						.attr('height', boxScale(0) - boxScale(boxHeight))
-						.on('mouseover', d => self.tip.show(d, event.target))
+						.attr('height', Math.abs(boxScale(0) - boxScale(boxHeight)))
+						.on('mouseover', d => self.tip.show({...d, tipDirection: part.tipDirection, tipOffset: part.tipOffset}, event.target))
 						.on('mouseout', d => self.tip.hide(d, event.target));
 
 					boxplot.append('line')

@@ -18,7 +18,7 @@
 			"target": {"min": 8, "LIF":12, "q1":19, "median":22, "q3": 29, "UIF":37, "max": 42},
 			"compare":{"min": 1, "LIF":5, "q1":12, "median":15, "q3": 22, "UIF":30, "max": 35}
 		}
-	]
+	]		
 	</textarea>
 	<button id="reload">Reload</button>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
@@ -32,6 +32,7 @@
 			function refreshPlot() {
 				chartData = JSON.parse(document.querySelector("#chartData").value);
 				plot.render(chartData, target, 300,50, {
+					boxHeight:20,
 					ticks: 4,
 					xLabel: "Type",
 					yLabel: "Count",

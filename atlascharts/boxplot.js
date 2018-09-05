@@ -24,8 +24,10 @@ define(["d3", "./chart"],
 
 	class Boxplot extends Chart {
 		defaultTip(tip, options) {
+
 			tip.attr('class', 'd3-tip')
-			.offset([-10, 0])
+			.offset(d => d.tipOffset || [-10,0])
+			.direction(d => d.tipDirection || "n")
 			.html(d =>
 				`<table class='boxplotValues'>
 					<tr>
