@@ -18,57 +18,22 @@ Authors: Christopher Knoll
 
 */
 
-define(["d3", "./chart"],
-	function(d3, Chart) {
+define(["d3", "./boxplot"],
+	function(d3, Boxplot) {
 	"use strict";
 
-	class SplitBoxplot extends Chart {
+	class SplitBoxplot extends Boxplot {
 	  render(data, target, w, h, chartOptions) {
 	    // options
-			const defaults = {boxHeight: 10};
+			const defaults = {boxHeight: 10, valueFormatter: this.formatters.formatSI(3)};
 			
 	    const options = this.getOptions(defaults, chartOptions);
 	    // container
 	    const svg = this.createSvg(target, w, h);
 
-	    const valueFormatter = this.formatters.formatSI(3);
-
-	    this.useTip((tip) => {
-	      tip.attr('class', 'd3-tip')
-	      .offset([-10, 0])
-	      .html(d =>
-	        `<table class='boxplotValues'>
-	          <tr>
-	            <td>Max:</td>
-	            <td>${valueFormatter(d.max)}</td>
-	          </tr>
-	          <tr>
-	            <td>P90:</td>
-	            <td>${valueFormatter(d.UIF)}</td>
-	          </tr>
-	          <tr>
-	            <td>P75:</td>
-	            <td>${valueFormatter(d.q3)}</td>
-	          </tr>
-	          <tr>
-	            <td>Median:</td>
-	            <td>${valueFormatter(d.median)}</td>
-	          </tr>
-	          <tr>
-	            <td>P25:</td>
-	            <td>${valueFormatter(d.q1)}</td>
-	          </tr>
-	          <tr>
-	            <td>P10:</td>
-	            <td>${valueFormatter(d.LIF)}</td>
-	          </tr>
-	          <tr>
-	            <td>Min:</td>
-	            <td>${valueFormatter(d.min)}</td>
-	          </tr>
-	        </table>`
-	      );
-	    });
+			const valueFormatter = options.valueFormatter;
+			
+	    this.useTip(this.defaultTip, options);
 
 			// assign a category if it is absent
 			data.forEach(d => d.Category = d.Category || "Default");

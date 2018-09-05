@@ -23,50 +23,53 @@ define(["d3", "./chart"],
 	"use strict";
 
 	class Boxplot extends Chart {
+		defaultTip(tip, options) {
+			tip.attr('class', 'd3-tip')
+			.offset([-10, 0])
+			.html(d =>
+				`<table class='boxplotValues'>
+					<tr>
+						<td>Max:</td>
+						<td>${options.valueFormatter(d.max)}</td>
+					</tr>
+					<tr>
+						<td>P90:</td>
+						<td>${options.valueFormatter(d.UIF)}</td>
+					</tr>
+					<tr>
+						<td>P75:</td>
+						<td>${options.valueFormatter(d.q3)}</td>
+					</tr>
+					<tr>
+						<td>Median:</td>
+						<td>${options.valueFormatter(d.median)}</td>
+					</tr>
+					<tr>
+						<td>P25:</td>
+						<td>${options.valueFormatter(d.q1)}</td>
+					</tr>
+					<tr>
+						<td>P10:</td>
+						<td>${options.valueFormatter(d.LIF)}</td>
+					</tr>
+					<tr>
+						<td>Min:</td>
+						<td>${options.valueFormatter(d.min)}</td>
+					</tr>
+				</table>`
+			);
+		}
+		
 	  render(data, target, w, h, chartOptions) {
 	    // options
-	    const options = this.getOptions(chartOptions);
+			const defaults = {valueFormatter: this.formatters.formatSI(3)};
+			const options = this.getOptions(defaults, chartOptions);
 	    // container
 	    const svg = this.createSvg(target, w, h);
 
-	    const valueFormatter = this.formatters.formatSI(3);
+			const valueFormatter = options.valueFormatter;
 
-	    this.useTip((tip) => {
-	      tip.attr('class', 'd3-tip')
-	      .offset([-10, 0])
-	      .html(d =>
-	        `<table class='boxplotValues'>
-	          <tr>
-	            <td>Max:</td>
-	            <td>${valueFormatter(d.max)}</td>
-	          </tr>
-	          <tr>
-	            <td>P90:</td>
-	            <td>${valueFormatter(d.UIF)}</td>
-	          </tr>
-	          <tr>
-	            <td>P75:</td>
-	            <td>${valueFormatter(d.q3)}</td>
-	          </tr>
-	          <tr>
-	            <td>Median:</td>
-	            <td>${valueFormatter(d.median)}</td>
-	          </tr>
-	          <tr>
-	            <td>P25:</td>
-	            <td>${valueFormatter(d.q1)}</td>
-	          </tr>
-	          <tr>
-	            <td>P10:</td>
-	            <td>${valueFormatter(d.LIF)}</td>
-	          </tr>
-	          <tr>
-	            <td>Min:</td>
-	            <td>${valueFormatter(d.min)}</td>
-	          </tr>
-	        </table>`
-	      );
-	    });
+	    this.useTip(this.defaultTip, options);
 
 	    // apply labels (if specified) and offset margins accordingly
 	    let xAxisLabelHeight = 0;
