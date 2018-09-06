@@ -1,3 +1,39 @@
 textarea {
   tab-size: 1; /* Set tab size to 2 spaces */
 }
+
+.boxplot .target .median {
+	stroke: #ff9315;
+}
+.boxplot .target line {
+	stroke: #ff9315;
+	stroke-width: 1px;
+}
+.boxplot .target rect,
+.boxplot .target circle {
+	fill: rgba(255, 147, 21, 0.67);
+	stroke: #ff9315;
+	stroke-width: 1px;
+}
+.boxplot .target .whisker {
+	stroke-dasharray: 3, 3;
+	stroke: #ff9315;
+}
+
+.boxplot .compare .median {
+	stroke: #0d61ff;
+}
+.boxplot .compare line {
+	stroke: #0d61ff;
+	stroke-width: 1px;
+}
+.boxplot .compare rect,
+.boxplot .compare circle {
+	fill: rgba(42, 116, 255, 0.76);
+	stroke: #0d61ff;
+	stroke-width: 1px;
+}
+.boxplot .compare .whisker {
+	stroke-dasharray: 3, 3;
+	stroke: #0d61ff;
+}

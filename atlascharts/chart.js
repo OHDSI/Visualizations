@@ -74,14 +74,14 @@ define(["d3", "d3-tip"],
 	    return chart;
 	  }
 
-	  useTip(tooltipConfigurer = () => {}) {
+	  useTip(tooltipConfigurer = () => {}, options) {
 
 	    this.destroyTipIfExists();
 
 	    this.tip = d3tip()
 	      .attr('class', 'd3-tip');
 
-	    tooltipConfigurer(this.tip);
+	    tooltipConfigurer(this.tip, options);
 
 	    if (this.chart) {
 	      this.chart.call(this.tip);
