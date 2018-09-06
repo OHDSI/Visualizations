@@ -27,6 +27,8 @@ define(["d3", "./boxplot"],
 	    // options
 			const defaults = {
 				showXAxis: true,
+				showMinMarkers: true,
+				showMaxMarkers: true,
 				boxHeight: 10, 
 				valueFormatter: this.formatters.formatSI(3), 
 				margins: {
@@ -80,8 +82,8 @@ define(["d3", "./boxplot"],
 				tempXAxis.call(xAxis);
 
 				// update width & height based on temp xaxis dimension and remove
-				xAxisHeight = Math.round(tempXAxis.node().getBBox().height);
-				xAxisWidth = Math.round(tempXAxis.node().getBBox().width);
+				xAxisHeight = Math.round(tempXAxis.node().getBBox().height) + 2;
+				xAxisWidth = Math.round(tempXAxis.node().getBBox().width) + 4;
 				height -= xAxisHeight;
 				width -= Math.max(0, (xAxisWidth - width)); // trim width if
 				// xAxisWidth bleeds over the allocated width.
@@ -99,17 +101,25 @@ define(["d3", "./boxplot"],
 				width -= yAxisWidth;
 				tempYAxis.remove();
 			}
-	    // reset axis ranges
-	    x.range([0, width]);
-	    y.range([height, 0]);
 
 	    const boxHeight = options.boxHeight;
 	    let boxOffset = (y.bandwidth() / 2) - (boxHeight / 2);
 	    let whiskerHeight = boxHeight / 2;
+			let endMarkerSize = whiskerHeight / 10;
 
+			if (options.showMinMarkers) {
+				if (endMarkerSize > yAxisWidth)
+					width -= 2 * endMarkerSize - yAxisWidth; // subtract from width any endMarkerSize's exceess over the yAxis Width.
+				else
+					width -= endMarkerSize; // subtract only the right side's end-marker width.
+			}
+	    // reset axis ranges
+	    x.range([0, width]);
+	    y.range([height, 0]);
+			
 	    const chart = svg.append('g')
 	      .attr('transform', `translate(
-	          ${options.margins.left + yAxisWidth},
+	          ${options.margins.left + Math.max(yAxisWidth, endMarkerSize)},
 	          ${options.margins.top}
 	        )`);
 			
@@ -203,7 +213,20 @@ define(["d3", "./boxplot"],
 							.attr('x2', x(d.UIF))
 							.attr('y2', boxScale(0));
 					}
-					// to do: add max/min indicators					
+					
+					if (options.showMinMarkers) {
+						boxplot.append('circle')
+							.attr('cx', x(d.min))
+							.attr('cy', boxScale(whiskerHeight/2))
+							.attr('r', endMarkerSize);
+					}
+
+					if (options.showMaxMarkers) {
+						boxplot.append('circle')
+							.attr('cx', x(d.max))
+							.attr('cy', boxScale(whiskerHeight/2))
+							.attr('r', endMarkerSize);
+					}
 				});
 	    });
 
