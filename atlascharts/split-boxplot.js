@@ -26,6 +26,7 @@ define(["d3", "./boxplot"],
 	  render(data, target, w, h, chartOptions) {
 	    // options
 			const defaults = {
+				showXAxis: true,
 				boxHeight: 10, 
 				valueFormatter: this.formatters.formatSI(3), 
 				margins: {
@@ -65,7 +66,7 @@ define(["d3", "./boxplot"],
 
 	    const xAxis = d3.axisBottom()
 	      .scale(x)
-	      .tickFormat(options.yFormat)
+	      .tickFormat(valueFormatter)
 	      .ticks(5);
 			
 	    const yAxis = d3.axisLeft()
@@ -178,7 +179,7 @@ define(["d3", "./boxplot"],
 						.attr('y', Math.min(boxScale(0), boxScale(boxHeight)))
 						.attr('width', Math.max(1, x(d.q3) - x(d.q1)))
 						.attr('height', Math.abs(boxScale(0) - boxScale(boxHeight)))
-						.on('mouseover', d => self.tip.show({...d, tipDirection: part.tipDirection, tipOffset: part.tipOffset}, event.target))
+						.on('mouseover', d => self.tip.show(Object.assign({}, d, { tipDirection: part.tipDirection, tipOffset: part.tipOffset }), event.target))
 						.on('mouseout', d => self.tip.hide(d, event.target));
 
 					boxplot.append('line')
