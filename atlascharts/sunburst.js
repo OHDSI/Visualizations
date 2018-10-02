@@ -30,7 +30,6 @@ define(["d3", "./chart"], function (d3, Chart) {
 		}
 		
 		getTipOffset(d, arc) {
-			console.log(d);
 			const bbox = event.target.getBBox();
 			const arcCenter = arc.centroid(d);
 			let tipOffsetX = Math.abs(bbox.x - arcCenter[0]) - (bbox.width/2)
@@ -56,7 +55,7 @@ define(["d3", "./chart"], function (d3, Chart) {
 
 	    // this must be done after createSvg()
 			this.useTip((tip, options) => {
-				tip.attr('class', 'd3-tip')
+				tip.attr('class', `d3-tip ${options.tipClass || ""}`)
 					.offset(d => d.tipOffset || [-10,0])
 					.direction(d => d.tipDirection || "n")
 					.html(d => options.tooltip(d))
@@ -134,11 +133,12 @@ define(["d3", "./chart"], function (d3, Chart) {
 				})
 				.attr("d", arc)
 				.attr("fill-rule", "evenodd")
-				.attr("class", d => ("node"))
+				.attr("class", d => (options.nodeClass && options.nodeClass(d)) || "node")
 				.style("fill", d => d.isSplit ? "#000" : options.colors(d.data.name))
 				.style("opacity", d => d.isSplit ? 0 : 1)
 				.on('mouseover', d => self.tip.show(Object.assign({}, d, { tipDirection: self.getTipDirection(d), tipOffset: self.getTipOffset(d, arc)}), event.target))
-				.on('mouseout', d => self.tip.hide(d, event.target));
+				.on('mouseout', d => self.tip.hide(d, event.target))
+				.on('click', (d) => options.onclick && options.onclick(d));
 
 
 			//todo: .on("mouseover", mouseover);
