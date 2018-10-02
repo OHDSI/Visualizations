@@ -27,15 +27,15 @@ define(["d3", "numeral", "./chart"],
 	    // result is an array of arrays, each element in the array is another array containing
 	    // information about each bar of the histogram.
 	    const result = [];
-	    const minValue = histogramData.MIN;
+	    const offset = histogramData.OFFSET;
 	    const intervalSize = histogramData.INTERVAL_SIZE;
 
 	    const tempData = this.normalizeDataframe(histogramData.DATA);
 	    for (let i = 0; i <= histogramData.INTERVALS; i += 1) {
 	      const target = {};
-	      target.x = minValue + 1.0 * i * intervalSize; // eslint-disable-line no-mixed-operators
+	      target.x = offset + 1.0 * tempData.INTERVAL_INDEX[i] * intervalSize; // eslint-disable-line no-mixed-operators
 	      target.dx = intervalSize;
-	      target.y = tempData.COUNT_VALUE[tempData.INTERVAL_INDEX.indexOf(i)] || 0;
+	      target.y = tempData.COUNT_VALUE[i] || 0;
 	      result.push(target);
 	    }
 
