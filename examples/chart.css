@@ -121,6 +121,11 @@ table.boxplotValues tr td
 	opacity: 0;
 }
 
+.sunburst .node {
+	stroke: #fff;
+	stroke-width: 2;
+}
+
 .d3-tip {
 	/*white-space: nowrap;*/
 	line-height: 1;
