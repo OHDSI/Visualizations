@@ -31,7 +31,7 @@ define(["d3", "numeral", "./chart"],
 	    const intervalSize = histogramData.INTERVAL_SIZE;
 
 	    const tempData = this.normalizeDataframe(histogramData.DATA);
-	    for (let i = 0; i <= histogramData.INTERVALS; i += 1) {
+	    for (let i = 0; i < histogramData.INTERVALS; i += 1) {
 	      const target = {};
 	      target.x = offset + 1.0 * tempData.INTERVAL_INDEX[i] * intervalSize; // eslint-disable-line no-mixed-operators
 	      target.dx = intervalSize;
