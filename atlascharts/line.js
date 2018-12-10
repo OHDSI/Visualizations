@@ -49,27 +49,6 @@ define(["d3", "./chart"],
       return data;
 		}
 
-    // Returns a function, that, as long as it continues to be invoked, will not
-    // be triggered. The function will be called after it stops being called for
-    // N milliseconds. If `immediate` is passed, trigger the function on the
-    // leading edge, instead of the trailing.
-    static debounce(func, wait, immediate) {
-      var timeout;
-      return function() {
-        var context = this, args = arguments;
-        var later = function() {
-          timeout = null;
-          if (!immediate) func.apply(context, args);
-        };
-        var callNow = immediate && !timeout;
-        if (timeout) {
-          window.cancelAnimationFrame(timeout);
-        }
-        timeout = window.requestAnimationFrame(later);
-        if (callNow) func.apply(context, args);
-      };
-    };
-
     static getMinValue(data, key) {
       return d3.min(data, d => d3.min(d.values, d => d[key]));
     }
@@ -104,19 +83,7 @@ define(["d3", "./chart"],
       if (typeof target == "string") {
         target = document.querySelector(target);
       }
-      
-      if (!target.doResize){
-        target.doResize = Line.debounce(() => {
-          if (target.parentElement == null) {
-            window.removeEventListener("resize", target.doResize);
-          } else {
-            this.render(data, target,target.clientWidth,target.clientHeight,chartOptions);
-          }
-        }, 250);        
-        window.addEventListener("resize", target.doResize);
-      } 
-      
-      
+            
       // options
 	    const defaults = {
 	      xFormat: this.formatters.formatSI(3),
