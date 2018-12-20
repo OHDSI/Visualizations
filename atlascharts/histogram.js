@@ -27,7 +27,7 @@ define(["d3", "numeral", "./chart"],
 	    // result is an array of arrays, each element in the array is another array containing
 	    // information about each bar of the histogram.
 	    const result = [];
-	    const offset = histogramData.OFFSET;
+	    const offset = histogramData.OFFSET || 0;
 	    const intervalSize = histogramData.INTERVAL_SIZE;
 
 	    const tempData = this.normalizeDataframe(histogramData.DATA);
