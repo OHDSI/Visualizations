@@ -17,8 +17,8 @@ limitations under the License.
 Authors: Christopher Knoll, Mark Valez, Sigfried Gold, Alexander Saltykov
 
 */
-define(["d3", "lodash", "./chart"],
-	function(d3, lodash, Chart) {
+define(["d3", "./chart"],
+	function(d3, Chart) {
 	"use strict";
 
 	class Line extends Chart {
@@ -80,20 +80,11 @@ define(["d3", "lodash", "./chart"],
 
     render(data, target, w, h, chartOptions) {
 
-      if (typeof target == "string") {
+			super.render(data,target,w,h,chartOptions);
+			
+			if (typeof target == "string") {
         target = document.querySelector(target);
       }
-      
-      if (!target.doResize){
-        target.doResize = lodash.debounce(() => {
-          if (target.parentElement == null) {
-            window.removeEventListener("resize", target.doResize);
-          } else {
-            this.render(data, target,target.clientWidth,target.clientHeight,chartOptions);
-          }
-        }, 250);        
-        window.addEventListener("resize", target.doResize);
-      } 
       
       
       // options

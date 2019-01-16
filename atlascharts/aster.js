@@ -23,6 +23,7 @@ define(["d3", "./chart"], function (d3, Chart) {
 
 	class Aster extends Chart {
 		render(data, target, w, h, chartOptions) {
+			super.render(data, target, w, h, chartOptions);
 			// options
 			const options = this.getOptions({
 				maxPercent: 100.0

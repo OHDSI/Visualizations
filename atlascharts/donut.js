@@ -30,6 +30,9 @@ define(["d3", "numeral", "./chart"],
 	  }
 
 	  render(data, target, w, h, chartOptions) {
+			
+			super.render(data,target,w,h,chartOptions);
+			
 	    // options
 	    const options = this.getOptions(chartOptions);
 	    // container

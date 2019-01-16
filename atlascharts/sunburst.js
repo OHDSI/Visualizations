@@ -38,6 +38,8 @@ define(["d3", "./chart"], function (d3, Chart) {
 		}
 		
 		render(data, target, width, height, chartOptions) {
+			
+			super.render(data, target, width, height, chartOptions);
 
 			const defaultOptions = {
 				tooltip: (d) => {

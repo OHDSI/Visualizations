@@ -18,8 +18,8 @@ Author: Alexander Saltykov
 
 */
 
-define(["d3", "d3-tip"],
-	function(d3, d3tip) {
+define(["d3", "lodash", "d3-tip"],
+	function(d3, lodash, d3tip) {
 	"use strict";
 	
 	class Chart {
@@ -34,6 +34,25 @@ define(["d3", "d3-tip"],
 	    };
 	  }
 
+    render(data, target, w, h, chartOptions) {		
+
+			if (typeof target == "string") {
+				target = document.querySelector(target);
+			}
+
+			if (!target.doResize){
+				target.doResize = lodash.debounce(() => {
+					if (target.parentElement == null) {
+						window.removeEventListener("resize", target.doResize);
+					} else {
+						this.render(data, target,target.clientWidth,target.clientHeight,chartOptions);
+					}
+				}, 250);        
+				window.addEventListener("resize", target.doResize);
+			}
+			
+		}
+		
 	  getOptions(chartSpecificDefaults, customOptions) {
 	    const options = Object.assign({}, {
 		      margins: {

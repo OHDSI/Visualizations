@@ -24,6 +24,7 @@ define(['d3', './chart'],
 
 	class Scatterplot extends Chart {
 	  render(data, target, w, h, chartOptions) {
+			super.render(data, target, w, h, chartOptions);
 	    // options
 			const defaults = {
 				xFormat: this.formatters.formatSI(3),

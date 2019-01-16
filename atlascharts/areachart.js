@@ -18,11 +18,12 @@ Authors: Christopher Knoll
 
 */
 
-define(["d3"], function(d3) {
+define(["d3", "./chart"], function(d3, Chart) {
 	"use strict";
 
-	function areachart() {
-		this.render = function (data, target, w, h, options) {
+	class AreaChart extends Chart {
+		render (data, target, w, h, options) {
+			super.render(data, target, w, h, options); 
 			var defaults = {
 				margin: {
 					top: 20,
@@ -70,17 +71,13 @@ define(["d3"], function(d3) {
 					return y(d.y);
 				});
 
-			var chart = d3.select(target)
-				.append("svg:svg")
-				.data(data)
-				.attr("viewBox", `0 0 ${w} ${h}`)
-				.attr('preserveAspectRatio', 'xMinYMin meet');
-
+			const chart = this.createSvg(target, w, h);
+			
 			var vis = chart.append("g")
 				.attr("transform", "translate(" + options.margin.left + "," + options.margin.top + ")");
 
 			vis.append("path")
-				.datum(data)
+				.data([data])
 				.attr("class", "area")
 				.attr("d", area);
 
@@ -96,6 +93,6 @@ define(["d3"], function(d3) {
 		};
 	};
 	
-	return areachart;
+	return AreaChart;
 	
 });

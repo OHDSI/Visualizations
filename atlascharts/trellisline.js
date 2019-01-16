@@ -24,6 +24,7 @@ define(["d3", "./chart"],
 
 	class Trellisline extends Chart {
 	  render(dataByTrellis, target, w, h, chartOptions) {
+			super.render(dataByTrellis, target, w, h, chartOptions);
 	    // options
 	    const defaults = {
 	      trellisSet: d3.keys(dataByTrellis),
