@@ -94,7 +94,10 @@ define(["d3", "numeral", "./chart"],
 	  }
 
 	  render(chartData, target, w, h, chartOptions) {
-	    // options
+	    
+			super.render(chartData, target, w, h, chartOptions);
+			
+			// options
 	    const defaults = {
 	      ticks: 10,
 	      yTicks: 4,

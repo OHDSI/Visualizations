@@ -31,6 +31,7 @@ define(["d3", "./chart"],
 	  }
 
 	  render(data, target, w, h, chartOptions) {
+			super.render(data, target, w, h, chartOptions);
 	    // options
 	    const defaults = {
 	      label: 'label',

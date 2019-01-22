@@ -63,6 +63,7 @@ define(["d3", "./chart"],
 		}
 		
 	  render(data, target, w, h, chartOptions) {
+			super.render(data, target, w, h, chartOptions);
 	    // options
 			const defaults = {valueFormatter: this.formatters.formatSI(3)};
 			const options = this.getOptions(defaults, chartOptions);
