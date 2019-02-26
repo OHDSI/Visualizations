@@ -112,9 +112,9 @@ define(["d3", "numeral", "./chart"],
 	    this.xScale = {}; // shared xScale for histogram and boxplot
 	    const data = chartData || []; // default to empty set if null is passed in
 
-			const tooltipBuilder = typeof options.getTooltipBuilder === 'function'
-			? options.getTooltipBuilder(options)
-			: d => numeral(d.y).format('0,0');
+      const tooltipBuilder = typeof options.getTooltipBuilder === 'function'
+      ? options.getTooltipBuilder(options)
+      : d => numeral(d.y).format('0,0');
 
 			this.useTip((tip) => {
 	      tip.attr('class', 'd3-tip')
