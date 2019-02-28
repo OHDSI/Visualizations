@@ -1,0 +1,66 @@
+<html>
+
+<head>
+	<title>Visualizations: histogram</title>
+	<link href="example.css" rel="stylesheet">
+	<link href="chart.css" rel="stylesheet">
+</head>
+
+<body>
+	<h1>Histogram Example</h1>
+	<div>This plot shows a simple histogram of an age distribution</div>
+	<div style="width:30%" id="plot"></div>
+	<hr/>
+	<div>Data:</div>
+	<textarea id="chartData" style="width:600px; height:400px">
+[
+	{"x": 0, "dx": 5, "y":2},
+	{"x": 5, "dx": 5, "y":4},
+	{"x": 10, "dx": 5, "y":7},
+	{"x": 15, "dx": 5, "y":8},
+	{"x": 20, "dx": 5, "y":18},
+	{"x": 25, "dx": 5, "y":25},
+	{"x": 30, "dx": 5, "y":32},
+	{"x": 35, "dx": 5, "y":21},
+	{"x": 35, "dx": 5, "y":14},
+	{"x": 40, "dx": 5, "y":7},
+	{"x": 45, "dx": 5, "y":22},
+	{"x": 50, "dx": 5, "y":35},
+	{"x": 55, "dx": 5, "y":44},
+	{"x": 60, "dx": 5, "y":49},
+	{"x": 65, "dx": 5, "y":21}
+]
+	</textarea>
+	<button id="reload">Reload</button>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
+	<script src="../build/config.js"></script>
+	<script>
+    function renderTooltip(options) {
+        return d => `Custom Tooltip<br>Y: ${d.y}`;
+    }
+		requirejs(['atlascharts/histogram'], function(histogram) {
+			var cartData;
+			var plot = new histogram();
+			var target = document.querySelector('#plot');
+
+			function refreshPlot() {
+				chartData = JSON.parse(document.querySelector("#chartData").value);
+				plot.render(chartData, target, 250, 250, {
+					ticks: 6,
+					xLabel: "Age",
+					yLabel: "Count",
+					getTooltipBuilder: renderTooltip
+				});
+			}
+			
+			document.querySelector("#reload").addEventListener("click", function() {
+				refreshPlot();	
+			});
+			
+			refreshPlot();
+			
+			
+		});
+	</script>
+</body>
+</html>
