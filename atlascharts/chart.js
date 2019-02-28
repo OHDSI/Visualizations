@@ -40,15 +40,11 @@ define(["d3", "lodash", "d3-tip"],
 				target = document.querySelector(target);
 			}
 
-			if (!target.doResize){
-				target.doResize = lodash.debounce(() => {
-					if (target.parentElement == null) {
-						window.removeEventListener("resize", target.doResize);
-					} else {
-						this.render(data, target,target.clientWidth,target.clientHeight,chartOptions);
-					}
+			if (!this.doResize) {
+				this.doResize = lodash.debounce(() => {
+					this.render(data, target,target.clientWidth,target.clientHeight,chartOptions);
 				}, 250);        
-				window.addEventListener("resize", target.doResize);
+				window.addEventListener("resize", this.doResize);
 			}
 			
 		}
@@ -298,6 +294,13 @@ define(["d3", "lodash", "d3-tip"],
 		      return data;
 	    }
 	  }
+	
+		dispose() {
+			if (this.doResize) {
+				window.removeEventListener("resize", this.doResize);
+			}
+		}
+
 	}
 
 	return Chart;	
