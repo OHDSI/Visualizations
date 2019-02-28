@@ -1,4 +1,4 @@
-/* 
+/*
 
 Copyright 2017 Observational Health Data Sciences and Informatics
 
@@ -41,7 +41,7 @@ define(["d3", "numeral", "./chart"],
 
 	    return result;
 	  }
-	  
+
 	  drawBoxplot(g, data, width, height) {
 	    const boxplot = g;
 	    const x = this.xScale;
@@ -94,15 +94,16 @@ define(["d3", "numeral", "./chart"],
 	  }
 
 	  render(chartData, target, w, h, chartOptions) {
-	    
+
 			super.render(chartData, target, w, h, chartOptions);
-			
+
 			// options
 	    const defaults = {
 	      ticks: 10,
 	      yTicks: 4,
 	      yScale: d3.scaleLinear(),
 	      boxplotHeight: 10,
+	      getTooltipBuilder: null,
 	    };
 	    const options = this.getOptions(defaults, chartOptions);
 	    // container
@@ -111,10 +112,14 @@ define(["d3", "numeral", "./chart"],
 	    this.xScale = {}; // shared xScale for histogram and boxplot
 	    const data = chartData || []; // default to empty set if null is passed in
 
+	    const tooltipBuilder = typeof options.getTooltipBuilder === 'function'
+	    ? options.getTooltipBuilder(options)
+	    : d => numeral(d.y).format('0,0');
+
 	    this.useTip((tip) => {
 	      tip.attr('class', 'd3-tip')
 	        .offset([-10, 0])
-	        .html(d => numeral(d.y).format('0,0'));
+	        .html(tooltipBuilder);
 	    });
 
 	    let xAxisLabelHeight = 0;
@@ -251,7 +256,7 @@ define(["d3", "numeral", "./chart"],
 	      .call(yAxis);
 	  }
 	}
-	
+
 	return Histogram;
-	
+
 });
