@@ -1,4 +1,4 @@
-/* 
+/*
 
 Copyright 2017 Observational Health Data Sciences and Informatics
 
@@ -21,7 +21,7 @@ Author: Alexander Saltykov
 define(["d3", "lodash", "d3-tip"],
 	function(d3, lodash, d3tip) {
 	"use strict";
-	
+
 	class Chart {
 	  static get chartTypes() {
 	    return {
@@ -34,7 +34,7 @@ define(["d3", "lodash", "d3-tip"],
 	    };
 	  }
 
-    render(data, target, w, h, chartOptions) {		
+    render(data, target, w, h, chartOptions) {
 
 			if (typeof target == "string") {
 				target = document.querySelector(target);
@@ -43,12 +43,12 @@ define(["d3", "lodash", "d3-tip"],
 			if (!this.doResize) {
 				this.doResize = lodash.debounce(() => {
 					this.render(data, target,target.clientWidth,target.clientHeight,chartOptions);
-				}, 250);        
+				}, 250);
 				window.addEventListener("resize", this.doResize);
 			}
-			
+
 		}
-		
+
 	  getOptions(chartSpecificDefaults, customOptions) {
 	    const options = Object.assign({}, {
 		      margins: {
@@ -294,8 +294,9 @@ define(["d3", "lodash", "d3-tip"],
 		      return data;
 	    }
 	  }
-	
+
 		dispose() {
+			this.destroyTipIfExists();
 			if (this.doResize) {
 				window.removeEventListener("resize", this.doResize);
 			}
@@ -303,5 +304,5 @@ define(["d3", "lodash", "d3-tip"],
 
 	}
 
-	return Chart;	
+	return Chart;
 });
