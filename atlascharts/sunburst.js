@@ -1,4 +1,4 @@
-/* 
+/*
 
 Copyright 2017 Observational Health Data Sciences and Informatics
 
@@ -28,23 +28,28 @@ define(["d3", "./chart"], function (d3, Chart) {
 		getTipDirection(d) {
 			return("n");
 		}
-		
-		getTipOffset(d, arc) {
+
+		getTipOffset(d, arc, options) {
 			const bbox = event.target.getBBox();
 			const arcCenter = arc.centroid(d);
+			const { tipPosition = 'bottom' } = options;
 			let tipOffsetX = Math.abs(bbox.x - arcCenter[0]) - (bbox.width/2)
-			let tipOffsetY = Math.abs(bbox.y - arcCenter[1]);
-			return([tipOffsetY-10,tipOffsetX]);
+			let tipOffsetY;
+			tipPosition === 'bottom' && (tipOffsetY = Math.abs(bbox.y - arcCenter[1]) - 10);
+			tipPosition === 'top' && (tipOffsetY = Math.abs(bbox.y + arcCenter[1]) + 10);
+
+			return [tipOffsetY, tipOffsetX];
 		}
-		
+
 		render(data, target, width, height, chartOptions) {
-			
+
 			super.render(data, target, width, height, chartOptions);
 
 			const defaultOptions = {
 				tooltip: (d) => {
 					return `<div>No Tooltip Set</div>`
-				}
+				},
+				tipPosition: 'bottom', // available options bottom|top
 
 			};
 
@@ -138,7 +143,7 @@ define(["d3", "./chart"], function (d3, Chart) {
 				.attr("class", d => (options.nodeClass && options.nodeClass(d)) || "node")
 				.style("fill", d => d.isSplit ? "#000" : options.colors(d.data.name))
 				.style("opacity", d => d.isSplit ? 0 : 1)
-				.on('mouseover', d => self.tip.show(Object.assign({}, d, { tipDirection: self.getTipDirection(d), tipOffset: self.getTipOffset(d, arc)}), event.target))
+				.on('mouseover', d => self.tip.show(Object.assign({}, d, { tipDirection: self.getTipDirection(d), tipOffset: self.getTipOffset(d, arc, options)}), event.target))
 				.on('mouseout', d => self.tip.hide(d, event.target))
 				.on('click', (d) => options.onclick && options.onclick(d));
 
