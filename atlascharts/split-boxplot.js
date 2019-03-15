@@ -123,7 +123,47 @@ define(["d3", "./boxplot"],
 	          ${options.margins.top}
 	        )`);
 			
-	    // draw main box and whisker plots
+			if (options.showLegend) {
+				const legend = svg.append('g')
+					.attr('class', 'legend');
+				const targetLegendItem = legend.append('g');
+				const compareLegendItem = legend.append('g');
+
+				let maxWidth = 0;
+
+				targetLegendItem.append('rect')
+					.attr('x', 0)
+					.attr('y', 0)
+					.attr('width', 10)
+					.attr('height', 10)
+					.attr('class', 'target');
+					
+				targetLegendItem.append('text')
+					.attr('x', 15)
+					.attr('y', 9)
+					.text('Target');
+
+				compareLegendItem.append('rect')
+					.attr('x', targetLegendItem.node().getBBox().width + 10)
+					.attr('y', 0)
+					.attr('width', 10)
+					.attr('height', 10)
+					.attr('class', 'compare');
+
+				
+				compareLegendItem.append('text')
+					.attr('x', targetLegendItem.node().getBBox().width + 25)
+					.attr('y', 9)
+					.text('Compare');
+				
+				// maxWidth = Math.max(legend.node().getBBox().width + 12, maxWidth);
+				legend.attr('transform', `translate(
+					${(w - legend.node().getBBox().width) / 2},
+					0
+				)`);
+			}
+			
+			// draw main box and whisker plots
 	    const boxplots = chart.selectAll('.boxplot')
 	      .data(data)
 	      .enter().append('g')
@@ -245,8 +285,7 @@ define(["d3", "./boxplot"],
 					.call(yAxis)
 					.selectAll('.tick text')
 					.call(this.wrap, y.bandwidth() || y.range());
-			}
-			
+			}						
 	  }
 	}
 	
