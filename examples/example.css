@@ -10,7 +10,8 @@ textarea {
 	stroke-width: 1px;
 }
 .boxplot .target rect,
-.boxplot .target circle {
+.boxplot .target circle,
+.legend .target {
 	fill: rgba(255, 147, 21, 0.67);
 	stroke: #ff9315;
 	stroke-width: 1px;
@@ -28,7 +29,8 @@ textarea {
 	stroke-width: 1px;
 }
 .boxplot .compare rect,
-.boxplot .compare circle {
+.boxplot .compare circle,
+.legend .compare {
 	fill: rgba(42, 116, 255, 0.76);
 	stroke: #0d61ff;
 	stroke-width: 1px;
