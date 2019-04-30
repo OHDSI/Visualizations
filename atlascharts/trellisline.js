@@ -62,9 +62,9 @@ define(["d3", "./chart"],
 	    }
 
 	    function mouseout() {
-				gTrellis.selectAll('.g-end').style('display', null);
-				gTrellis.selectAll('.g-label-value.g-start').style('display', 'none');
-				gTrellis.selectAll('.g-label-value.g-end').style('display', 'none')
+	      gTrellis.selectAll('.g-end').style('display', null);
+	      gTrellis.selectAll('.g-label-value.g-start').style('display', 'none');
+	      gTrellis.selectAll('.g-label-value.g-end').style('display', 'none')
 	      gTrellis.selectAll('.g-label-year.g-start').call(yearLabel, minDate);
 	      gTrellis.selectAll('.g-label-year.g-end').call(yearLabel, maxDate);
 	      gTrellis.selectAll('.g-value').style('display', 'none');
@@ -72,49 +72,49 @@ define(["d3", "./chart"],
 
 	    function valueLabel(text, date) {
 	      const offsetScale = d3.scaleLinear().domain(seriesScale.range());
-				const o = {};
+	      const o = {};
 	      text.each(function(d, idx) {
-					const text = d3.select(this);
+	        const text = d3.select(this);
 	        const s = d.values;
-					const i = bisect(s, date, 0, s.length - 1);
+	        const i = bisect(s, date, 0, s.length - 1);
 	        const j = Math.round(i / (s.length - 1) * (s.length - 12));
 	        const v = s[i];
 	        if (v && v.date) {
 	          const x = seriesScale(v.date);
 	          var yValue = (v.Y_PREVALENCE_1000PP === 0 || v.Y_PREVALENCE_1000PP)
 	            ? v.Y_PREVALENCE_1000PP
-							: v.yPrevalence1000Pp;
-						const xPos = offsetScale.range([0, trellisScale.bandwidth()])(x);
-						const yPos = yScale(d3.max(s.slice(j, j + 12), d => yValue));
-						const trellisName = v.TRELLIS_NAME || v.trellisName;
-						if (trellisName) {
-							!o[trellisName] && (o[trellisName] = []);
-							o[trellisName].push({ y: yPos, x: xPos, value: yValue, text, color: options.colors(d.key) })
-						}
+	            : v.yPrevalence1000Pp;
+	          const xPos = offsetScale.range([0, trellisScale.bandwidth()])(x);
+	          const yPos = yScale(d3.max(s.slice(j, j + 12), d => yValue));
+	          const trellisName = v.TRELLIS_NAME || v.trellisName;
+	          if (trellisName) {
+	            !o[trellisName] && (o[trellisName] = []);
+	            o[trellisName].push({ y: yPos, x: xPos, value: yValue, text, color: options.colors(d.key) })
+	          }
 	        }
-				});
-				Object.keys(o).forEach(k => {
-					const items = o[k];
-					items.sort((a,b) => a.y - b.y);
-					items.forEach((item, idx) => {
-						if (idx > 0) {
-							const last = items[idx-1].y;
-							items[idx].y += Math.max(0, (last + 15) - items[idx].y);
-						}
-					});
+	      });
+	      Object.keys(o).forEach(k => {
+	        const items = o[k];
+	        items.sort((a,b) => a.y - b.y);
+	        items.forEach((item, idx) => {
+	          if (idx > 0) {
+	            const last = items[idx-1].y;
+	            items[idx].y += Math.max(0, (last + 15) - items[idx].y);
+	          }
+	        });
 
-					items.forEach(item => {
-						const { text, x, y, color, value } = item;
-						text.text(options.yFormat(value))
-							.style('display', 'block')
-							.attr('transform', `translate(
-									${x + 4},
-									${value <= 20 ? y - 20 : y}
-								)`
-							);
-					});
-				});
-			}
+	        items.forEach(item => {
+	          const { text, x, y, color, value } = item;
+	          text.text(options.yFormat(value))
+	            .style('display', 'block')
+	            .attr('transform', `translate(
+	                ${x + 4},
+	                ${value <= 20 ? y - 20 : y}
+	              )`
+	            );
+	        });
+	      });
+	    }
 
 	    function yearLabel(text, date) {
 	      const offsetScale = d3.scaleLinear().domain(seriesScale.range());
@@ -412,11 +412,11 @@ define(["d3", "./chart"],
 
 	    gSeries.append('text')
 	      .attr('class', 'g-label-value g-start')
-				.style('display', 'none');
+	      .style('display', 'none');
 
 	    gSeries.append('text')
-				.attr('class', 'g-label-value g-end')
-				.style('display', 'none');
+	      .attr('class', 'g-label-value g-end')
+	      .style('display', 'none');
 
 	    gTrellis.append('text')
 	      .attr('class', 'g-label-year g-start')
