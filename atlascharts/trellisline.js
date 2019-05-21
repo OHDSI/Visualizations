@@ -51,7 +51,7 @@ define(["d3", "./chart"],
 	        const s = d.values;
 	        if (s) {
 	          const v = s[bisect(s, date, 0, s.length - 1)];
-						const yValue = (v.Y_PREVALENCE_1000PP === 0 || v.Y_PREVALENCE_1000PP) ? v.Y_PREVALENCE_1000PP : v.yPrevalence1000Pp;
+	          const yValue = (v.Y_PREVALENCE_1000PP === 0 || v.Y_PREVALENCE_1000PP) ? v.Y_PREVALENCE_1000PP : v.yPrevalence1000Pp;
 	          if (v && v.date) {
 	            return 'translate(' + seriesScale(v.date) + ',' + yScale(yValue) + ')';
 	          } else {
