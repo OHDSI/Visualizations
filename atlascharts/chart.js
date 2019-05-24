@@ -156,11 +156,11 @@ define(["d3", "lodash", "d3-tip"],
 	        }
 	      },
 	    };
-		}
+	  }
 
 	  truncate(text, width) {
 	    text.each(function() {
-	    const t = d3.select(this);
+	      const t = d3.select(this);
 	      const originalText = t.text();
 	      let textLength = t.node().getComputedTextLength();
 	      let text = t.text();
