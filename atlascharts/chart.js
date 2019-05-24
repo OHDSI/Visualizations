@@ -156,6 +156,21 @@ define(["d3", "lodash", "d3-tip"],
 	        }
 	      },
 	    };
+		}
+
+	  truncate(text, width) {
+	    text.each(function() {
+	    const t = d3.select(this);
+	      const originalText = t.text();
+	      let textLength = t.node().getComputedTextLength();
+	      let text = t.text();
+	      while (textLength > width && text.length > 0) {
+	        text = text.slice(0, -1);
+	        t.text(`${text}...`);
+	        textLength = t.node().getComputedTextLength();
+	      }
+	      t.append('title').text(originalText);
+	    });
 	  }
 
 	  wrap(text, width) {
