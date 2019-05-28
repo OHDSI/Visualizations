@@ -1,4 +1,4 @@
-/* 
+/*
 
 Copyright 2017 Observational Health Data Sciences and Informatics
 
@@ -72,7 +72,7 @@ define(['d3', './chart'],
 							values: data
 						}];
 				}
-					
+
 	      this.useTip((tip) => {
 	        tip.attr('class', 'd3-tip')
 	          .offset([-10, 0])
@@ -84,9 +84,9 @@ define(['d3', './chart'],
 				let bbox;
 
 				// apply labels (if specified) and offset margins accordingly
+				let xAxisLabel;
 				if (options.xLabel) {
-					const xAxisLabel = svg.append('g')
-						.attr('transform', 'translate(' + w / 2 + ',' + (h - options.margins.bottom) + ')');
+					xAxisLabel = svg.append('g');
 
 					xAxisLabel.append('text')
 						.attr('class', 'axislabel')
@@ -97,9 +97,9 @@ define(['d3', './chart'],
 					xAxisLabelHeight += bbox.height;
 				}
 
+				let yAxisLabel;
 				if (options.yLabel) {
-					const yAxisLabel = svg.append('g')
-						.attr('transform', 'translate(' + options.margins.left + ',' + (((h - options.margins.bottom - options.margins.top) / 2) + options.margins.top) + ')');
+					yAxisLabel = svg.append('g')
 					yAxisLabel.append('text')
 						.attr('class', 'axislabel')
 						.attr('transform', 'rotate(-90)')
@@ -204,6 +204,26 @@ define(['d3', './chart'],
 				width = width - yAxisWidth;
 				tempYAxis.remove();
 
+				if (options.xLabel && xAxisLabel) {
+					xAxisLabel
+						.attr('transform', `translate(
+							${yAxisLabelWidth + yAxisWidth + options.margins.left + width/2},
+							${h - options.margins.bottom}
+						)`)
+						.selectAll('text')
+						.call(this.truncate, width);
+				}
+
+				if (options.yLabel && yAxisLabel) {
+					yAxisLabel
+						.attr('transform', `translate(
+							${options.margins.left},
+							${options.margins.bottom + height/2}
+						)`)
+						.selectAll('text')
+						.call(this.truncate, height);
+				}
+
 				// reset axis ranges
 				// if x scale is ordinal, then apply rangeRoundBands, else apply standard range.
 				if (typeof x.rangePoints === 'function') {
@@ -239,7 +259,7 @@ define(['d3', './chart'],
 						const yVal = y(d[options.yValue]);
 						return 'translate(' + xVal + ',' + yVal + ')';
 					});
-				
+
 				if (options.addDiagonal) {
 					series.append("line")
 						.attr("x1", 0)
@@ -293,7 +313,10 @@ define(['d3', './chart'],
 						return 'translate(' + xVal + ',' + yVal + ')';
 					})
 					.on('mouseover', function (d) {
-						d3.select(this).style('opacity', '1');
+						d3.select(this)
+							.style('opacity', '1')
+							.style('stroke', options.colors(d.seriesName))
+							.style('stroke-width', options.circleRadius/2);
 						currentObject.tip.show(d, event.target);
 					})
 					.on('mouseout', function (d) {
@@ -326,9 +349,9 @@ define(['d3', './chart'],
 					.style('text-anchor', 'middle')
 					.text('No Data');
 			}
-		};	
+		};
 	}
-	
+
 	return Scatterplot;
-	
+
 });
