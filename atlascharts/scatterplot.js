@@ -39,6 +39,7 @@ define(['d3', './chart'],
 				showSeriesLabel: false,
 				labelIndexDate: false,
 				colorBasedOnIndex: false,
+				truncateLabelAtLine: 2,
 				showXAxis: true,
 				tooltip: (d) => {
 					return `<div>Series: ${d.seriesName}</div>
@@ -90,6 +91,8 @@ define(['d3', './chart'],
 
 					xAxisLabel.append('text')
 						.attr('class', 'axislabel')
+						.attr('dy', 0)
+						.attr('y', 0)
 						.style('text-anchor', 'middle')
 						.text(options.xLabel);
 
@@ -206,12 +209,16 @@ define(['d3', './chart'],
 
 				if (options.xLabel && xAxisLabel) {
 					xAxisLabel
-						.attr('transform', `translate(
-							${yAxisLabelWidth + yAxisWidth + options.margins.left + width/2},
-							${h - options.margins.bottom}
-						)`)
 						.selectAll('text')
-						.call(this.truncate, width);
+						.call(this.wrap, width, options.truncateLabelAtLine);
+
+						const labelHeight = xAxisLabel.node().getBBox().height;
+						height = height - labelHeight;
+						xAxisLabel
+							.attr('transform', `translate(
+								${yAxisLabelWidth + yAxisWidth + options.margins.left + width/2},
+								${h - options.margins.bottom - (labelHeight)}
+							)`);
 				}
 
 				if (options.yLabel && yAxisLabel) {
@@ -221,7 +228,8 @@ define(['d3', './chart'],
 							${options.margins.bottom + height/2}
 						)`)
 						.selectAll('text')
-						.call(this.truncate, height);
+						.call(this.wrap, height, options.truncateLabelAtLine);
+						yAxisLabelWidth = yAxisLabel.node().getBBox().width;
 				}
 
 				// reset axis ranges
