@@ -173,14 +173,15 @@ define(["d3", "lodash", "d3-tip"],
 	    });
 	  }
 
-	  wrap(text, width) {
+	  wrap(text, width, truncateAtLine) {
 	    text.each(function () {
-	      const text = d3.select(this);
+	    const text = d3.select(this);
+	    const fullText = text.text();
 	      const words = text.text().split(/\s+/).reverse();
 	      let line = [];
 	      let word;
 	      let lineNumber = 0;
-	      const lineCount = 0;
+	      let lineCount = 0;
 	      const lineHeight = 1.1; // ems
 	      const y = text.attr('y');
 	      const dy = parseFloat(text.attr('dy'));
@@ -197,7 +198,8 @@ define(["d3", "lodash", "d3-tip"],
 	          if (line.length > 1) {
 	            line.pop(); // remove word from line
 	            words.push(word); // put the word back on the stack
-	            tspan.text(line.join(' '));
+	            const text = !!truncateAtLine && ++lineCount === truncateAtLine ? `${line.splice(0, line.length - 1).join(' ')}...` : line.join(' ');
+	            tspan.text(text);
 	          }
 	          line = [];
 	          tspan = text
@@ -205,8 +207,13 @@ define(["d3", "lodash", "d3-tip"],
 	            .attr('x', 0)
 	            .attr('y', y)
 	            .attr('dy', `${++lineNumber * lineHeight + dy}em`);
+	          if (!!truncateAtLine && truncateAtLine === lineCount) {
+	            tspan.remove();
+	            break;
+	          }
 	        }
 	      }
+	      text.append('title').text(fullText);
 	    });
 	  }
 
