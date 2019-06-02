@@ -9,7 +9,7 @@ Getting Started
 Clone a copy of the main repo by running:
 
 ```bash
-git clone git://github.com/ohdsi/vizualizations
+git clone git://github.com/ohdsi/visualizations
 ```
 
 Point a local HTTP server to the root of the repository (IIS, Node Express, etc)
@@ -19,7 +19,7 @@ Open a browser to the examples under the /examples folder.
 Developing and Debugging
 ------------------------
 
-The examples are configured using RequireJS and reference CDN hosted libraries for D3, jQuery and others.  To run the examples, just open one of the examples, set braekpoints and edit-reload to see changes.
+The examples are configured using RequireJS and reference CDN hosted libraries for D3, jQuery and others.  To run the examples, just open one of the examples, set breakpoints and edit-reload to see changes.
 
 There are no development dependencies required for updating code, although npm is used to version and publish the package.
 
