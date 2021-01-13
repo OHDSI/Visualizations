@@ -1,6 +1,8 @@
 const webpack = require('webpack');
+const TerserPlugin = require("terser-webpack-plugin");
 
 const config = {
+  mode: 'production',
   entry: {
     main: './atlascharts/main.js'
   },
@@ -14,18 +16,25 @@ const config = {
     numeral: 'numeral'
   },
   module: {
-    loaders: [{
-      test: /\.js?$/,
-      exclude: /node_modules/,
-      loaders: ['babel-loader'],
-    }]
+    rules: [
+      {
+        test: /\.js?$/,
+        exclude: /node_modules/,
+        use: ['babel-loader'],
+      }
+    ]
   },
-  plugins: [],
+  optimization: {
+    minimize: true,
+    minimizer: [new TerserPlugin({
+      terserOptions: {
+        format: {
+          comments: false,
+        },
+      },
+      extractComments: false,
+    })],
+  }
 };
-
-config.plugins.push(new webpack.optimize.UglifyJsPlugin({
-  comments: false,
-}));
-config.plugins.push(new webpack.optimize.OccurrenceOrderPlugin());
 
 module.exports = config;
