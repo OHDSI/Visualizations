@@ -28,6 +28,8 @@ Running the Optimizer and Publishing to NPM Registry
 
 ### Build Steps
 
+**Note: building this libary depends on node >= 15.0.0 and npm >= 7.4.0 **
+
 In order to minify/optimize the javascript libarry, you will need to perform an npm install:
 
 ```bash
