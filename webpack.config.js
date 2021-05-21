@@ -9,11 +9,18 @@ const config = {
   output: {
     filename: 'dist/atlascharts.umd.js',
     path: __dirname,
-    libraryTarget: 'umd'
+    libraryTarget: 'umd',
+		library: 'atlascharts'
   },
   externals: {
     d3: 'd3',
-    numeral: 'numeral'
+    numeral: 'numeral',
+    lodash: {
+      commonjs: 'lodash',
+      commonjs2: 'lodash',
+      amd: 'lodash',
+      root: '_', // indicates global variable
+    }
   },
   module: {
     rules: [
