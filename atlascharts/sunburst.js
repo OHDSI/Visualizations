@@ -44,8 +44,8 @@ define(["d3", "./chart"], function (d3, Chart) {
 			const defaultOptions = {
 				tooltip: (d) => {
 					return `<div>No Tooltip Set</div>`
-				}
-
+				},
+				minRadians: .005
 			};
 
 			// options
@@ -98,7 +98,7 @@ define(["d3", "./chart"], function (d3, Chart) {
 					return b.value - a.value;
 				});
 
-			let nodes = partition(root).descendants().filter(d => (d.x1 - d.x0 > 0.005)).reverse(); // 0.005 radians = 0.29 degrees
+			let nodes = partition(root).descendants().filter(d => (d.x1 - d.x0 > options.minRadians)).reverse(); // 0.005 radians = 0.29 degrees
 
 			if (options.split) {
 				const multiNodes = nodes.reduce((result, node) => {

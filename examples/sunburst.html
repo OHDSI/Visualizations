@@ -144,7 +144,7 @@
 
 			function refreshPlot() {
 				chartData = JSON.parse(document.querySelector("#chartData").value);
-				plot.render(chartData.data, target, 600,600, {split: split});
+				plot.render(chartData.data, target, 600,600, {split: split, minRadians: 0});
 			}
 			
 			
