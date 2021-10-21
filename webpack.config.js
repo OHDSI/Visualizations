@@ -10,7 +10,7 @@ const config = {
     filename: 'dist/atlascharts.umd.js',
     path: __dirname,
     libraryTarget: 'umd',
-		library: 'atlascharts'
+    library: 'atlascharts'
   },
   externals: {
     d3: 'd3',
