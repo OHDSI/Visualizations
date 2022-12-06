@@ -1,0 +1,54 @@
+<html>
+
+<head>
+	<title>Visualizations: horizontal boxplot</title>
+	<link href="example.css" rel="stylesheet">
+	<link href="chart.css" rel="stylesheet">
+</head>
+
+<body>
+	<h1>Horizontal Boxplot Example</h1>
+	<div>This plot shows a horizontal boxplot</div>
+	<div style="width:30%" id="plot"></div>
+	<hr/>
+	<div>Data:</div>
+	<textarea id="chartData" style="width:600px; height:400px">
+	[
+		{
+			"Category": "Type 1", "min": 1, "LIF":17, "q1":29, "median":36, "q3": 45, "UIF":55, "max": 80
+		},
+		{
+			"Category": "Type 2", "min": 16, "LIF":22, "q1":24, "median":26, "q3": 29, "UIF":39, "max": 48
+		},
+		{
+			"Category": "Type 3", "min": 2, "LIF":13, "q1":18, "median":23, "q3": 29, "UIF":37, "max": 49
+		}
+	]		
+	</textarea>
+
+	<button id="reload">Reload</button>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
+	<script src="../build/config.js"></script>
+	<script>
+		requirejs(['atlascharts/horizontal-boxplot'], function(horizontalBoxplot) {
+			var chartData;
+			var plot = new horizontalBoxplot();
+			var target = document.querySelector('#plot');
+
+			function refreshPlot() {
+				chartData = JSON.parse(document.querySelector("#chartData").value);
+				plot.render(chartData, target, 300,65, {
+					boxHeight:20,
+				});
+			}
+			
+			document.querySelector("#reload").addEventListener("click", function() {
+				refreshPlot();	
+			});
+			
+			refreshPlot();
+
+		});
+	</script>
+</body>
+</html>

@@ -12,6 +12,7 @@ define(function(require) {
 	var boxplot = require("./boxplot");
 	var donut = require("./donut");
 	var histogram = require("./histogram");
+	var horizontalBoxplot = require("./horizontal-boxplot");
 	var line = require("./line");
 	var trellisline = require("./trellisline");
 	var treemap = require("./treemap");
@@ -27,6 +28,7 @@ define(function(require) {
 	module.boxplot = boxplot;
 	module.donut = donut;
 	module.histogram = histogram;
+	module.horizontalBoxplot = horizontalBoxplot;
 	module.line = line;
 	module.trellisline = trellisline;
 	module.treemap = treemap;
